@@ -3,41 +3,52 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
-<title>Malaysia Boleh Peta</title>
+<title>Malaysia Peta</title>
 <link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
 <style>
   :root{--bg:rgba(15,23,42,.9);--line:rgba(255,255,255,.12);--cy:#22d3ee;--tx:#f1f5f9;--mut:#94a3b8}
   *{box-sizing:border-box}
-  html,body{margin:0;height:100%;overflow:hidden;background:#0b0f19;color:var(--tx);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-  #map{position:absolute;inset:0}
+  html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#0b0f19;color:var(--tx);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  #map{position:absolute;top:0;bottom:0;left:0;right:0;width:100%;height:100%;z-index:1}
+  
   .card{background:var(--bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
   #top{position:absolute;top:0;left:0;right:0;z-index:5;padding:10px;display:flex;flex-direction:column;gap:8px;pointer-events:none}
   #top>*{pointer-events:auto}
   
-  #toprow{display:flex;gap:8px;align-items:center}
+  #toprow{display:flex;gap:6px;align-items:center}
   #searchrow{display:flex;flex-direction:column;gap:6px;padding:8px;position:relative;flex:2;min-width:0}
   .s-input-group{display:flex;gap:6px}
   
   #logo-badge{
-    flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
-    padding:4px 8px;background:linear-gradient(135deg, #090d16 0%, #111c30 100%);
+    flex:none;width:105px;display:flex;align-items:center;justify-content:center;gap:4px;
+    padding:4px 6px;background:linear-gradient(135deg, #090d16 0%, #111c30 100%);
     border:1px solid rgba(234,179,8,0.4);border-radius:18px;height:53px;box-shadow:0 10px 30px rgba(0,0,0,.4);
   }
-  #logo-badge svg{width:26px;height:28px;flex:none}
-  #logo-text{display:flex;flex-direction:column;justify-content:center;line-height:1.1}
-  #logo-text b{font-size:8px;color:#facc15;white-space:nowrap;font-weight:700;letter-spacing:.03em}
-  #logo-text small{font-size:8px;color:#facc15;letter-spacing:.03em;white-space:nowrap;font-weight:700}
+  #logo-badge svg{width:20px;height:22px;flex:none}
+  #logo-text{display:flex;flex-direction:column;justify-content:center;line-height:1.1;align-items:center;text-align:center;width:100%}
+  #logo-text b{font-size:7px;color:#facc15;white-space:nowrap;font-weight:700;letter-spacing:.02em}
+  #logo-text small{font-size:7px;color:#facc15;letter-spacing:.02em;white-space:nowrap;font-weight:700}
+  #logo-text .beta-tag{font-size:5.5px;color:#94a3b8;letter-spacing:.04em;text-transform:uppercase;margin-top:1px}
 
-  #banner{display:none;align-items:center;gap:12px;padding:12px}
+  #banner{display:none;align-items:center;gap:8px;padding:10px}
   #banner.on{display:flex}
-  #icon{width:52px;height:52px;border-radius:14px;background:rgba(34,211,238,.18);border:1px solid rgba(34,211,238,.4);display:grid;place-items:center;font-size:28px;flex:none}
+  #icon{width:46px;height:46px;border-radius:12px;background:rgba(34,211,238,.18);border:1px solid rgba(34,211,238,.4);display:grid;place-items:center;font-size:24px;flex:none}
   #bd{flex:1;min-width:0}
-  #bdist{font:700 20px ui-monospace,monospace;color:var(--cy)}
-  #btext{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-  #spd{text-align:center;flex:none;padding:6px 10px;border-radius:12px;background:rgba(2,6,23,.6);border:1px solid var(--line)}
-  #spd b{display:block;font:700 18px ui-monospace,monospace;color:#34d399}
-  #spd small{font-size:9px;color:var(--mut);letter-spacing:.08em}
+  #bdist{font:700 18px ui-monospace,monospace;color:var(--cy)}
+  #btext{font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
   
+  .speed-group{display:flex;gap:4px;flex:none}
+  #spd{text-align:center;padding:5px 8px;border-radius:10px;background:rgba(2,6,23,.6);border:1px solid var(--line);min-width:46px}
+  #spd b{display:block;font:700 16px ui-monospace,monospace;color:#34d399;transition:color 0.3s}
+  #spd b.overspeed{color:#ef4444;animation:pulse 0.6s infinite alternate}
+  #spd small{font-size:8px;color:var(--mut);letter-spacing:.05em}
+
+  #speedlimit{text-align:center;padding:5px 6px;border-radius:10px;background:rgba(2,6,23,.6);border:1px solid rgba(234,179,8,0.4);min-width:46px;display:flex;flex-direction:column;justify-content:center;align-items:center}
+  #speedlimit b{display:block;font:700 15px ui-monospace,monospace;color:#facc15}
+  #speedlimit small{font-size:7.5px;color:var(--mut);letter-spacing:.03em}
+
+  @keyframes pulse{0%{opacity:1}100%{opacity:0.5}}
+
   input.q-field{flex:1;background:rgba(2,6,23,.6);border:1px solid var(--line);border-radius:10px;color:var(--tx);padding:8px 10px;font-size:13px;outline:none;min-width:0}
   input.q-field:focus{border-color:var(--cy)}
   button{font:600 13px system-ui;border:0;border-radius:12px;padding:8px 12px;cursor:pointer;color:#fff;background:#334155}
@@ -52,22 +63,30 @@
 
   #bottom{position:absolute;left:0;right:0;bottom:0;z-index:5;padding:10px;pointer-events:none}
   #panel{padding:12px;pointer-events:auto}
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:10px}
   .stat{background:rgba(2,6,23,.6);border:1px solid var(--line);border-radius:12px;padding:8px 6px;text-align:center}
   .stat span{font-size:9px;color:var(--mut);display:block;white-space:nowrap}
   .stat b{font:700 15px ui-monospace,monospace}
-  .btns{display:flex;gap:8px;flex-wrap:wrap}
-  .btns button{flex:1;min-width:70px}
+  .btns{display:flex;gap:6px;flex-wrap:wrap}
+  .btns button{flex:1;min-width:60px;font-size:11px;padding:7px 6px}
   #toast{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:20;padding:10px 16px;font-size:13px;display:none;max-width:80%;text-align:center}
   
   #cat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px}
   #cat-row button{padding:6px 4px;font-size:10px;background:rgba(30,41,59,0.8);border:1px solid var(--line);white-space:nowrap}
+  
+  #report-menu{display:none;grid-template-columns:repeat(3,1fr);gap:6px;margin-bottom:8px}
+  #report-menu button{padding:7px 4px;font-size:10.5px;background:rgba(185, 28, 28, 0.85);border:1px solid #f87171;white-space:nowrap}
+
   #sim-controls{display:none;gap:6px;margin-top:6px}
   
   .me{width:26px;height:32px;background:#ef4444;clip-path:polygon(50% 0%, 0% 100%, 100% 100%);filter:drop-shadow(0 3px 6px rgba(0,0,0,0.6));transform-origin:center 70%;}
   .dest{background:#f43f5e;color:#fff;font:700 11px system-ui;padding:4px 9px;border-radius:8px;border:1px solid #ffe4e6;box-shadow:0 4px 14px rgba(244,63,94,.5);white-space:nowrap}
-  .poi-pin{background:#0e7490;color:#fff;font:700 11px system-ui;padding:4px 8px;border-radius:8px;border:1px solid #22d3ee;box-shadow:0 4px 14px rgba(0,0,0,.5);white-space:nowrap}
-  .aes-pin{background:#b91c1c;color:#fff;font:700 10px system-ui;padding:3px 6px;border-radius:6px;border:1px solid #f87171;box-shadow:0 2px 8px rgba(0,0,0,.5);white-space:nowrap}
+  .poi-pin{background:#0e7490;color:#fff;font:700 11px system-ui;padding:4px 8px;border-radius:8px;border:1px solid #22d3ee;box-shadow:0 4px 14px rgba(0,0,0,.5);cursor:pointer;white-space:nowrap}
+  .poi-pin:hover{background:#0891b2;transform:scale(1.05)}
+  
+  .trap-pin{background:rgba(185, 28, 28, 0.9);color:#fff;font:700 10px system-ui;padding:3px 6px;border-radius:6px;border:1px solid #f87171;box-shadow:0 3px 10px rgba(0,0,0,.5);cursor:pointer;white-space:nowrap}
+  .report-pin{background:rgba(217, 119, 6, 0.95);color:#fff;font:700 11px system-ui;padding:4px 8px;border-radius:8px;border:1px solid #fcd34d;box-shadow:0 3px 12px rgba(0,0,0,.6);white-space:nowrap}
+
   .maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right{margin-bottom:160px}
 </style>
 </head>
@@ -76,19 +95,22 @@
 
 <div id="top">
   <div id="banner" class="card">
-    <div id="icon">⬆️</div>
-    <div id="bd"><div id="bdist">0 m</div><div id="btext">—</div></div>
-    <div id="spd"><b id="spdv">0</b><small>KM/H</small></div>
+    <div id="icon"></div>
+    <div id="bd"><div id="bdist">0 m</div><div id="btext">�</div></div>
+    <div class="speed-group">
+      <div id="speedlimit"><b id="limv">90</b><small>LIMIT</small></div>
+      <div id="spd"><b id="spdv">0</b><small>KM/H</small></div>
+    </div>
   </div>
   
   <div id="toprow">
     <div class="card" id="searchrow">
       <div class="s-input-group">
-        <input id="qDest" class="q-field" placeholder="Search Klang Valley destination…" autocomplete="off">
+        <input id="qDest" class="q-field" placeholder="Search Malaysia or Singapore�" autocomplete="off">
         <button class="pri" id="go">Go</button>
       </div>
       <div class="s-input-group">
-        <input id="qVia" class="q-field" placeholder="+ Add stopover / waypoint (Optional)…" autocomplete="off">
+        <input id="qVia" class="q-field" placeholder="+ Add stopover (Optional)�" autocomplete="off">
       </div>
       <div id="resultsDest" class="results card"></div>
       <div id="resultsVia" class="results card"></div>
@@ -102,7 +124,8 @@
       </svg>
       <div id="logo-text">
         <b>MALAYSIA</b>
-        <small>BOLEH</small>
+        <small>PETA</small>
+        <div class="beta-tag">Beta Version</div>
       </div>
     </div>
   </div>
@@ -113,23 +136,29 @@
 <div id="bottom">
   <div id="panel" class="card">
     <div id="cat-row">
-      <button id="btnPetrol">⛽ Petrol</button>
-      <button id="btnAtm">💳 ATM</button>
-      <button id="btnFood">🍜 Food</button>
-      <button id="btnEv">⚡ EV Charger</button>
+      <button id="btnPetrol"> Petrol</button>
+      <button id="btnAtm"> ATM</button>
+      <button id="btnFood"> Food</button>
+      <button id="btnEv"> EV Charger</button>
+    </div>
+    <div id="report-menu">
+      <button id="repPolice"> Police / Trap</button>
+      <button id="repTraffic"> Heavy Traffic</button>
+      <button id="repAccident"> Accident</button>
     </div>
     <div class="stats">
       <div class="stat"><span>Distance</span><b id="sdist">--</b></div>
       <div class="stat"><span>Time</span><b id="stime" style="color:var(--cy)">--</b></div>
       <div class="stat"><span>ETA</span><b id="seta">--</b></div>
-      <div class="stat"><span>Est. Toll</span><b id="stoll" style="color:#fbbf24">RM 0.00</b></div>
     </div>
     <div class="btns">
-      <button id="bStart" class="pri" style="display:none">▶ Start</button>
-      <button id="bSim" style="display:none">🚗 Simulate</button>
-      <button id="bVoice">🔊 EN</button>
+      <button id="bStart" class="pri" style="display:none"> Start</button>
+      <button id="bSim" style="display:none"> Simulate</button>
+      <button id="bReportBtn" class="dng"> Report</button>
+      <button id="bAesToggle" class="pri"> AES: ON</button>
+      <button id="bVoice"> EN</button>
       <button id="bView">3D: ON</button>
-      <button id="bRecenter">◎ Recenter</button>
+      <button id="bRecenter"> Recenter</button>
       <button id="bEnd" class="dng" style="display:none">End</button>
     </div>
     <div id="sim-controls">
@@ -185,16 +214,16 @@ function stepIndexAt(ends, d) { for (let i = 0; i < ends.length; i++) if (d < en
 
 function maneuverIcon(type, mod, instructionText = '') {
   const txt = (instructionText || '').toLowerCase();
-  if (type === 'arrive') return '📍';
-  if (type === 'roundabout' || type === 'rotary' || type === 'roundabout turn') return '🔄';
-  if (mod === 'uturn' || txt.includes('u-turn')) return '↩️';
-  if (mod === 'sharp left' || txt.includes('sharp left')) return '↰';
-  if (mod === 'sharp right' || txt.includes('sharp right')) return '↱';
-  if (mod === 'left' || txt.includes('turn left')) return '⬅️';
-  if (mod === 'right' || txt.includes('turn right')) return '➡️';
-  if (mod === 'slight left' || txt.includes('keep left')) return '↖️';
-  if (mod === 'slight right' || txt.includes('keep right')) return '↗️';
-  return '⬆️';
+  if (type === 'arrive') return '';
+  if (type === 'roundabout' || type === 'rotary' || type === 'roundabout turn') return '';
+  if (mod === 'uturn' || txt.includes('u-turn')) return '';
+  if (mod === 'sharp left' || txt.includes('sharp left')) return '';
+  if (mod === 'sharp right' || txt.includes('sharp right')) return '';
+  if (mod === 'left' || txt.includes('left')) return '';
+  if (mod === 'right' || txt.includes('right')) return '';
+  if (mod === 'slight left' || txt.includes('slight left')) return '';
+  if (mod === 'slight right' || txt.includes('slight right')) return '';
+  return '';
 }
 
 function instruction(step, lang = 'EN') {
@@ -202,11 +231,12 @@ function instruction(step, lang = 'EN') {
   const road = step.name ? step.name : '';
   
   if (lang === 'BM') {
-    if (type === 'depart') return road ? 'Mulakan perjalanan di ' + road : 'Mulakan pemanduan';
-    if (type === 'arrive') return 'Anda telah sampai di destinasi';
-    if (mod.includes('left')) return road ? 'Belok kiri ke ' + road : 'Belok kiri di hadapan';
-    if (mod.includes('right')) return road ? 'Belok kanan ke ' + road : 'Belok kanan di hadapan';
-    return road ? 'Teruskan pemanduan di ' + road : 'Teruskan lurus';
+    if (type === 'depart') return road ? 'Terus jalan ikut ' + road : 'Terus jalan';
+    if (type === 'arrive') return 'Sampai sudah di destinasi anda';
+    if (mod.includes('left')) return road ? 'Masuk kiri ikut ' + road : 'Belok kiri di hadapan';
+    if (mod.includes('right')) return road ? 'Masuk kanan ikut ' + road : 'Belok kanan di hadapan';
+    if (mod === 'uturn') return 'Buat pusingan U di hadapan';
+    return road ? 'Teruskan perjalanan di ' + road : 'Teruskan lurus';
   }
   
   if (lang === 'Manglish') {
@@ -217,7 +247,6 @@ function instruction(step, lang = 'EN') {
     return road ? 'Go straight only, follow ' + road : 'Straight ahead, don\'t worry';
   }
 
-  // Standard EN
   const onto = road ? ' onto ' + road : '';
   switch (type) {
     case 'depart': return 'Head ' + (mod ? mod : 'out') + (road ? ' on ' + road : '');
@@ -229,51 +258,80 @@ function instruction(step, lang = 'EN') {
 }
 
 function spokenAt(step, distAhead, lang) {
-  const d = distAhead > 80 ? 'In ' + Math.round(distAhead / 50) * 50 + ' metres, ' : '';
+  const roundedDist = Math.round(distAhead / 50) * 50;
+  if (lang === 'BM') {
+    const d = distAhead > 80 ? 'Dalam ' + roundedDist + ' meter, ' : '';
+    return d + instruction(step, lang).toLowerCase();
+  }
+  const d = distAhead > 80 ? 'In ' + roundedDist + ' metres, ' : '';
   return d + instruction(step, lang).toLowerCase();
 }
 
-function estimateToll(steps) {
-  let toll = 0;
-  const rates = { 'ldp': 2.10, 'kesas': 2.00, 'npe': 2.30, 'sprint': 2.50, 'nkve': 3.50, 'PLUS': 4.00, 'duke': 2.50 };
-  steps.forEach(st => {
-    const name = (st.name || '').toLowerCase();
-    for (const [k, cost] of Object.entries(rates)) { if (name.includes(k)) { toll += cost; break; } }
-  });
-  return Math.round(toll * 100) / 100;
-}
-
 const DEFAULT = [101.6869, 3.1390];
-const KV = [[101.25, 2.65], [102.0, 3.50]];
 const OSRM = 'https://router.project-osrm.org/route/v1/driving/';
 const NOMINATIM = 'https://nominatim.openstreetmap.org/search';
-const OVERPASS = 'https://overpass-api.de/api/interpreter';
 
-// Sample Malaysian Highway AES Cameras
 const AES_CAMERAS = [
-  { name: 'PLUS Highway KM 375.9 (Slim River)', lngLat: [101.405, 3.820], limit: 110 },
-  { name: 'NKVE Highway KM 26.2 (Subang)', lngLat: [101.579, 3.105], limit: 90 },
-  { name: 'KESAS Highway KM 41.5 (Sunway)', lngLat: [101.605, 3.065], limit: 80 }
+  { name: 'PLUS KM 96.3 (Kuala Muda SB)', lngLat: [100.482, 5.654], limit: 110 },
+  { name: 'PLUS KM 97.2 (Kuala Muda NB)', lngLat: [100.485, 5.661], limit: 110 },
+  { name: 'PLUS KM 161.0 (Bukit Tambun)', lngLat: [100.472, 5.271], limit: 110 },
+  { name: 'PLUS KM 166.0 (Seberang Perai SB)', lngLat: [100.490, 5.230], limit: 110 },
+  { name: 'PLUS KM 174.0 (Bandar Baharu NB)', lngLat: [100.533, 5.142], limit: 110 },
+  { name: 'PLUS KM 204.6 (Taiping NB)', lngLat: [100.652, 4.851], limit: 110 },
+  { name: 'PLUS KM 258.25 (Menora Tunnel NB)', lngLat: [101.031, 4.672], limit: 90 },
+  { name: 'PLUS KM 262.5 (Menora Tunnel SB)', lngLat: [101.045, 4.640], limit: 90 },
+  { name: 'PLUS KM 299.9 (Kampar NB)', lngLat: [101.171, 4.390], limit: 110 },
+  { name: 'PLUS KM 301.6 (Kajang NB)', lngLat: [101.765, 2.985], limit: 110 },
+  { name: 'PLUS KM 375.9 (Slim River NB)', lngLat: [101.405, 3.820], limit: 110 },
+  { name: 'PLUS KM 382.8 (Behrang SB)', lngLat: [101.412, 3.765], limit: 110 },
+  { name: 'PLUS KM 431.55 (Rawang�Bukit Beruntung SB)', lngLat: [101.551, 3.390], limit: 110 },
+  { name: 'PLUS KM 265.3 (Nilai�Seremban SB)', lngLat: [101.791, 2.812], limit: 110 },
+  { name: 'PLUS KM 251.4 (Senawang SB)', lngLat: [101.972, 2.684], limit: 110 },
+  { name: 'PLUS KM 184.2 (Jasin NB)', lngLat: [102.431, 2.312], limit: 110 },
+  { name: 'PLUS KM 185.0 (Bemban SB)', lngLat: [102.420, 2.301], limit: 110 },
+  { name: 'PLUS KM 214.4 (Alor Gajah)', lngLat: [102.215, 2.385], limit: 110 },
+  { name: 'PLUS KM 146.8 (Pagoh SB)', lngLat: [102.765, 2.140], limit: 110 },
+  { name: 'PLUS KM 151.4 (Pagoh NB)', lngLat: [102.780, 2.165], limit: 110 },
+  { name: 'PLUS KM 1.0 (Johor Bahru)', lngLat: [103.750, 1.485], limit: 110 },
+  { name: 'ELITE Highway KM 17.0 (SB)', lngLat: [101.562, 2.891], limit: 110 },
+  { name: 'ELITE Highway KM 28.4 (KLIA NB)', lngLat: [101.791, 2.782], limit: 110 },
+  { name: 'LEKAS Highway KM 21.0 (Both)', lngLat: [101.890, 2.920], limit: 100 },
+  { name: 'Guthrie Corridor Expressway KM 18.0', lngLat: [101.520, 3.210], limit: 90 },
+  { name: 'SKVE Expressway KM 10.2 (Saujana Putra)', lngLat: [101.565, 2.965], limit: 90 },
+  { name: 'KESAS Highway KM 33.4 / KM 41.5', lngLat: [101.605, 3.065], limit: 80 },
+  { name: 'MEX Highway KM 11.6 (Putrajaya)', lngLat: [101.691, 2.981], limit: 110 },
+  { name: 'LPT2 Expressway KM 256.1 (Maran)', lngLat: [103.012, 4.220], limit: 110 },
+  { name: 'LPT2 Expressway KM 288.6', lngLat: [103.150, 4.410], limit: 110 },
+  { name: 'Jalan Ipoh - KL KM 85.5 (Sungkai)', lngLat: [101.305, 4.012], limit: 70 },
+  { name: 'Jalan Lebuh Sentosa KM 1.6 (Putrajaya)', lngLat: [101.685, 2.935], limit: 70 },
+  { name: 'Gua Musang - Kuala Krai KM 17.0', lngLat: [102.010, 4.901], limit: 70 },
+  { name: 'Jalan Klang Lama (Kuchai Lama Junction)', lngLat: [101.681, 3.102], limit: 60 },
+  { name: 'Jalan Ipoh (Sentul Junction)', lngLat: [101.689, 3.181], limit: 60 },
+  { name: 'Jalan Pasir Putih (Ipoh)', lngLat: [101.085, 4.580], limit: 60 },
+  { name: 'Jalan Alor Setar�Butterworth KM 36 / 54', lngLat: [100.380, 6.010], limit: 70 }
 ];
 
 const S = {
   pos: DEFAULT.slice(), heading: 0, hasGps: false, dest: null, via: null, route: null, coords: [], cum: [], steps: [], ends: [],
-  progress: 0, idx: 0, navigating: false, simulating: false, simDist: 0, simTimer: null, simSpeed: 1, is3D: true, voiceMode: 'EN', follow: true,
-  lastStep: -1, announced: {}, speed: 0, offRouteCount: 0, rerouting: false, lastAesAlert: 0
+  speedAnnotations: [], progress: 0, idx: 0, navigating: false, simulating: false, simDist: 0, simTimer: null, simSpeed: 1, is3D: true, voiceMode: 'EN', follow: false,
+  lastStep: -1, announced: {}, speed: 0, currentRoadLimit: 90, offRouteCount: 0, rerouting: false, lastAesAlert: 0, aesDisplayOn: true
 };
 
 const map = new maplibregl.Map({
   container: 'map',
   style: 'https://tiles.openfreemap.org/styles/liberty',
   center: DEFAULT, zoom: 12.5, pitch: 60, bearing: 0, maxPitch: 75,
-  maxBounds: [[KV[0][0]-0.15, KV[0][1]-0.15], [KV[1][0]+0.15, KV[1][1]+0.15]],
+  maxBounds: [[99.0, 1.0], [105.0, 7.5]],
   attributionControl: { compact: true }
 });
 map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
 
 const meEl = document.createElement('div'); meEl.className = 'me';
 const me = new maplibregl.Marker({ element: meEl, pitchAlignment: 'map', rotationAlignment: 'map' }).setLngLat(S.pos).addTo(map);
-let destMarker = null, viaMarker = null, poiMarkers = [], aesMarkers = [];
+let destMarker = null, viaMarker = null, poiMarkers = [], trapMarkers = [], userReports = [];
+
+map.on('dragstart', () => { if (S.navigating) S.follow = false; });
+map.on('zoomstart', () => { if (S.navigating) S.follow = false; });
 
 function toast(msg, ms = 2600) { const t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', ms); }
 function speak(text) {
@@ -307,15 +365,59 @@ map.on('style.load', () => {
     map.addLayer({ id: 'route', type: 'line', source: 'route', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#22d3ee', 'line-width': 6 } });
   }
 
-  // Render AES Cameras
-  AES_CAMERAS.forEach(cam => {
-    const el = document.createElement('div'); el.className = 'aes-pin'; el.textContent = '📸 AES';
-    const m = new maplibregl.Marker({ element: el }).setLngLat(cam.lngLat).addTo(map);
-    aesMarkers.push(m);
-  });
-
+  renderAesMarkers();
   startGps();
 });
+
+function renderAesMarkers() {
+  trapMarkers.forEach(m => m.remove());
+  trapMarkers = [];
+  if (!S.aesDisplayOn) return;
+
+  AES_CAMERAS.forEach(cam => {
+    const el = document.createElement('div');
+    el.className = 'trap-pin';
+    el.innerHTML = ` ${cam.name.split('(')[0]} <b style="color:#facc15;">${cam.limit}</b>`;
+    el.onclick = () => {
+      toast(`Speed Trap: ${cam.name} (Limit: ${cam.limit} km/h)`, 3500);
+    };
+    const m = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(cam.lngLat).addTo(map);
+    trapMarkers.push(m);
+  });
+}
+
+document.getElementById('bAesToggle').onclick = () => {
+  S.aesDisplayOn = !S.aesDisplayOn;
+  const btn = document.getElementById('bAesToggle');
+  btn.textContent = S.aesDisplayOn ? ' AES: ON' : ' AES: OFF';
+  btn.className = S.aesDisplayOn ? 'pri' : '';
+  renderAesMarkers();
+  toast(S.aesDisplayOn ? 'Speed trap markers displayed on map' : 'Speed trap markers hidden');
+};
+
+document.getElementById('bReportBtn').onclick = () => {
+  const menu = document.getElementById('report-menu');
+  menu.style.display = menu.style.display === 'grid' ? 'none' : 'grid';
+};
+
+function submitReport(type, label) {
+  document.getElementById('report-menu').style.display = 'none';
+  const lngLat = S.pos.slice();
+  
+  const el = document.createElement('div');
+  el.className = 'report-pin';
+  el.textContent = label;
+  
+  const m = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
+  userReports.push({ marker: m, lngLat, type });
+  
+  toast(`Report submitted: ${label} `);
+  speak(`New report added: ${label}`);
+}
+
+document.getElementById('repPolice').onclick = () => submitReport('police', ' Police / Speed Trap');
+document.getElementById('repTraffic').onclick = () => submitReport('traffic', ' Heavy Traffic');
+document.getElementById('repAccident').onclick = () => submitReport('accident', ' Accident Reported');
 
 function startGps(hi = true) {
   if (!navigator.geolocation) return;
@@ -329,8 +431,20 @@ function startGps(hi = true) {
     S.speed = p.coords.speed != null ? Math.round(p.coords.speed * 3.6) : 0;
     me.setLngLat(S.pos);
     meEl.style.transform = `rotate(${S.heading}deg)`;
-    if (S.navigating) onPosition(true); else document.getElementById('spdv').textContent = S.speed;
+    if (S.navigating) onPosition(true); else updateSpeedDisplay();
   }, () => {}, { enableHighAccuracy: hi, maximumAge: 5000, timeout: 20000 });
+}
+
+function updateSpeedDisplay() {
+  const spdEl = document.getElementById('spdv');
+  const limEl = document.getElementById('limv');
+  spdEl.textContent = S.speed;
+  limEl.textContent = S.currentRoadLimit;
+  if (S.speed > S.currentRoadLimit) {
+    spdEl.classList.add('overspeed');
+  } else {
+    spdEl.classList.remove('overspeed');
+  }
 }
 
 function setupSearch(inputId, resultsId, onSelect) {
@@ -343,10 +457,10 @@ function setupSearch(inputId, resultsId, onSelect) {
     if (q.length < 3) { box.classList.remove('on'); return; }
     debounce = setTimeout(async () => {
       try {
-        const r = await fetch(`${NOMINATIM}?format=jsonv2&limit=5&countrycodes=my&q=${encodeURIComponent(q)}&bounded=1&viewbox=${KV[0][0]},${KV[1][1]},${KV[1][0]},${KV[0][1]}`);
+        const r = await fetch(`${NOMINATIM}?format=jsonv2&limit=5&q=${encodeURIComponent(q)}&viewbox=99.0,1.0,105.0,7.5&bounded=0`);
         const items = await r.json();
         box.innerHTML = '';
-        if (!items.length) { box.innerHTML = '<div>No results</div>'; box.classList.add('on'); return; }
+        if (!items.length) { box.innerHTML = '<div>No results found</div>'; box.classList.add('on'); return; }
         items.forEach(it => {
           const d = document.createElement('div');
           const parts = it.display_name.split(', ');
@@ -364,7 +478,7 @@ function setupSearch(inputId, resultsId, onSelect) {
 setupSearch('qDest', 'resultsDest', (lngLat, name) => {
   S.dest = { name, lngLat };
   if (destMarker) destMarker.remove();
-  const el = document.createElement('div'); el.className = 'dest'; el.textContent = '📍 ' + name;
+  const el = document.createElement('div'); el.className = 'dest'; el.textContent = ' ' + name;
   destMarker = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
   fetchRoute();
 });
@@ -379,48 +493,72 @@ setupSearch('qVia', 'resultsVia', (lngLat, name) => {
 
 document.getElementById('go').onclick = () => { if (S.dest) fetchRoute(); };
 
-async function searchCategory(amenityType, title) {
-  toast(`Searching nearest ${title}...`);
-  const query = `[out:json][timeout:10];(node["amenity"="${amenityType}"](around:5000,${S.pos[1]},${S.pos[0]});way["amenity"="${amenityType}"](around:5000,${S.pos[1]},${S.pos[0]}););out body;>;out skel qt 5;`;
+async function searchCategory(searchTerm, title) {
+  toast(`Searching ${title} within 4km radius...`);
+  const viewbox = `${S.pos[0]-0.035},${S.pos[1]+0.035},${S.pos[0]+0.035},${S.pos[1]-0.035}`;
   try {
-    const res = await fetch(OVERPASS, { method: 'POST', body: query });
-    const data = await res.json();
-    const elements = data.elements.filter(el => el.lat && el.lon);
-    if (!elements.length) { toast(`No ${title} found nearby.`); return; }
+    const url = `${NOMINATIM}?format=jsonv2&limit=5&q=${encodeURIComponent(searchTerm)}&bounded=1&viewbox=${viewbox}`;
+    const res = await fetch(url, { headers: { 'Accept-Language': 'en' } });
+    const items = await res.json();
     
     poiMarkers.forEach(m => m.remove()); poiMarkers = [];
-    const el = elements[0];
-    const lngLat = [el.lon, el.lat];
-    const name = el.tags.name || title;
+    if (!items.length) { toast(`No ${title} found within 4km.`); return; }
     
-    const pinEl = document.createElement('div'); pinEl.className = 'poi-pin'; pinEl.textContent = '📍 ' + name;
-    const m = new maplibregl.Marker({ element: pinEl, anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
-    poiMarkers.push(m);
+    items.forEach(it => {
+      const lngLat = [+it.lon, +it.lat];
+      const name = it.display_name.split(',')[0] || title;
+      const dist = Math.round(haversine(S.pos, lngLat));
+      const distLabel = fmtDist(dist);
 
-    S.dest = { name, lngLat };
-    document.getElementById('qDest').value = name;
-    if (destMarker) destMarker.remove();
-    destMarker = new maplibregl.Marker({ element: document.createElement('div'), anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
-    fetchRoute();
-    toast(`Found: ${name}`);
+      const pinEl = document.createElement('div'); 
+      pinEl.className = 'poi-pin'; 
+      pinEl.innerHTML = ` ${name} <small style="color:#22d3ee; font-weight:700;">(${distLabel})</small>`;
+      
+      pinEl.onclick = () => {
+        S.dest = { name, lngLat };
+        document.getElementById('qDest').value = name;
+        if (destMarker) destMarker.remove();
+        destMarker = new maplibregl.Marker({ element: document.createElement('div'), anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
+        fetchRoute();
+        toast(`Selected: ${name}`);
+      };
+
+      const m = new maplibregl.Marker({ element: pinEl, anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
+      poiMarkers.push(m);
+    });
+
+    toast(`Found ${items.length} ${title}(s) nearby. Tap a pin to select!`);
   } catch (e) { toast('Category search failed'); }
 }
 
-document.getElementById('btnPetrol').onclick = () => searchCategory('fuel', 'Petrol');
+document.getElementById('btnPetrol').onclick = () => searchCategory('petrol station', 'Petrol');
 document.getElementById('btnAtm').onclick = () => searchCategory('atm', 'ATM');
 document.getElementById('btnFood').onclick = () => searchCategory('restaurant', 'Food');
-document.getElementById('btnEv').onclick = () => searchCategory('charging_station', 'EV Charger');
+document.getElementById('btnEv').onclick = () => searchCategory('ev charging station', 'EV Charger');
 
 async function fetchRoute() {
   if (!S.dest) return;
   const coordsStr = S.via ? `${S.pos[0]},${S.pos[1]};${S.via.lngLat[0]},${S.via.lngLat[1]};${S.dest.lngLat[0]},${S.dest.lngLat[1]}` : `${S.pos[0]},${S.pos[1]};${S.dest.lngLat[0]},${S.dest.lngLat[1]}`;
   try {
-    const r = await fetch(`${OSRM}${coordsStr}?overview=full&geometries=geojson&steps=true`);
+    const r = await fetch(`${OSRM}${coordsStr}?overview=full&geometries=geojson&steps=true&annotations=speed`);
     const j = await r.json();
-    if (j.code !== 'Ok' || !j.routes.length) { toast('No route found'); return; }
+    if (j.code !== 'Ok' || !j.routes.length) { toast('Route not found'); return; }
     
-    S.route = j.routes[0]; S.coords = S.route.geometry.coordinates; S.cum = cumulative(S.coords);
-    S.steps = S.route.legs.flatMap(l => l.steps); S.ends = stepEnds(S.steps);
+    S.route = j.routes[0]; 
+    S.coords = S.route.geometry.coordinates; 
+    S.cum = cumulative(S.coords);
+    S.steps = S.route.legs.flatMap(l => l.steps); 
+    S.ends = stepEnds(S.steps);
+    
+    S.speedAnnotations = [];
+    if (S.route.legs) {
+      S.route.legs.forEach(leg => {
+        if (leg.annotation && leg.annotation.speed) {
+          S.speedAnnotations.push(...leg.annotation.speed);
+        }
+      });
+    }
+
     S.progress = 0; S.idx = 0; S.lastStep = -1; S.announced = {};
 
     map.getSource('route').setData({ type: 'Feature', geometry: S.route.geometry, properties: {} });
@@ -428,7 +566,6 @@ async function fetchRoute() {
     document.getElementById('sdist').textContent = fmtDist(S.route.distance);
     document.getElementById('stime').textContent = fmtTime(S.route.duration);
     document.getElementById('seta').textContent = new Date(Date.now() + S.route.duration * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-    document.getElementById('stoll').textContent = estimateToll(S.steps) > 0 ? `RM ${estimateToll(S.steps).toFixed(2)}` : 'RM 0.00';
 
     const b = S.coords.reduce((bb, c) => bb.extend(c), new maplibregl.LngLatBounds(S.coords[0], S.coords[0]));
     map.fitBounds(b, { padding: 120, duration: 1200 });
@@ -436,13 +573,23 @@ async function fetchRoute() {
     document.getElementById('bStart').style.display = '';
     document.getElementById('bSim').style.display = '';
     document.getElementById('bEnd').style.display = '';
-    toast('Route calculated ✓');
+    toast('Route calculated ');
   } catch (e) { toast('Routing failed'); }
 }
 
 function showStep(si) {
   if (!S.steps.length) return;
   const st = S.steps[si];
+  const roadName = (st.name || '').toLowerCase();
+  
+  if (roadName.includes('highway') || roadName.includes('PLUS') || roadName.includes('LDP') || roadName.includes('KESAS') || roadName.includes('DUKE') || roadName.includes('NKVE') || roadName.includes('PIE') || roadName.includes('CTE')) {
+    S.currentRoadLimit = 110;
+  } else if (roadName.includes('jalan') || roadName.includes('lorong') || roadName.includes('kampung')) {
+    S.currentRoadLimit = 50;
+  } else {
+    S.currentRoadLimit = 80;
+  }
+
   const txt = instruction(st, S.voiceMode);
   document.getElementById('icon').textContent = maneuverIcon(st.maneuver.type, st.maneuver.modifier, txt);
   document.getElementById('btext').textContent = txt;
@@ -453,7 +600,22 @@ function onPosition(gpsDriven) {
   const nr = nearestOnRoute(S.coords, S.cum, S.pos, S.idx, 120);
   S.idx = nr.idx; S.progress = nr.progress;
 
-  // Rerouting on Deviation (> 40 meters off path)
+  if (S.idx > 0 && S.idx < S.coords.length) {
+    const remainingCoords = S.coords.slice(S.idx);
+    map.getSource('route').setData({
+      type: 'Feature',
+      geometry: { type: 'LineString', coordinates: remainingCoords },
+      properties: {}
+    });
+  }
+
+  if (S.speedAnnotations && S.speedAnnotations[S.idx]) {
+    const osmAnnotatedSpeed = S.speedAnnotations[S.idx];
+    if (osmAnnotatedSpeed > 10) {
+      S.currentRoadLimit = Math.round(osmAnnotatedSpeed);
+    }
+  }
+
   if (nr.offset > 40) {
     S.offRouteCount = (S.offRouteCount || 0) + 1;
     if (S.offRouteCount > 3 && !S.rerouting) {
@@ -466,13 +628,16 @@ function onPosition(gpsDriven) {
     S.offRouteCount = 0;
   }
 
-  // Check AES Camera proximity
   AES_CAMERAS.forEach(cam => {
     const distToCam = haversine(S.pos, cam.lngLat);
-    if (distToCam < 500 && (Date.now() - S.lastAesAlert > 60000)) {
+    if (distToCam < 2000 && (Date.now() - S.lastAesAlert > 90000)) {
       S.lastAesAlert = Date.now();
-      toast(`⚠️ Speed camera ahead! Limit: ${cam.limit} km/h`, 4000);
-      speak(`Speed camera ahead, ${cam.limit} kilometre per hour limit.`);
+      const distRounded = Math.round(distToCam / 100) * 100;
+      const warnMsg = S.voiceMode === 'BM' 
+        ? `Awas! Amaran Perangkap Laju dalam ${distRounded} meter, had laju ${cam.limit} kilometer sejam` 
+        : `Speed Trap Warning ahead in ${distRounded} metres, limit ${cam.limit} km/h`;
+      toast(` Speed Trap Warning in ${distRounded}m (${cam.limit} km/h)`, 4000);
+      speak(warnMsg);
     }
   });
 
@@ -483,7 +648,8 @@ function onPosition(gpsDriven) {
   const remTime = S.route.duration * fraction;
   document.getElementById('stime').textContent = fmtTime(remTime);
   document.getElementById('seta').textContent = new Date(Date.now() + remTime * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-  document.getElementById('spdv').textContent = S.speed;
+  
+  updateSpeedDisplay();
 
   const si = stepIndexAt(S.ends, S.progress);
   const stepDistRem = Math.max(0, S.ends[si] - S.progress);
@@ -501,7 +667,7 @@ function onPosition(gpsDriven) {
 
   if (rem < 35) {
     toast('You have arrived at your destination!', 5000);
-    speak(S.voiceMode === 'BM' ? 'Anda telah sampai.' : (S.voiceMode === 'Manglish' ? 'Arrived already, boss!' : 'You have arrived at your destination.'));
+    speak('You have arrived at your destination.');
     endNav();
     return;
   }
@@ -512,15 +678,15 @@ function onPosition(gpsDriven) {
 }
 
 document.getElementById('bStart').onclick = () => {
-  S.navigating = true; S.simulating = false; clearInterval(S.simTimer);
+  S.navigating = true; S.simulating = false; S.follow = true; clearInterval(S.simTimer);
   document.getElementById('banner').classList.add('on');
   document.getElementById('bStart').style.display = 'none'; document.getElementById('bSim').style.display = 'none';
-  toast('Navigation started ✓'); speak(S.voiceMode === 'BM' ? 'Mulakan navigasi' : 'Starting navigation.');
+  toast('Navigation started '); speak('Starting navigation.');
   onPosition(false);
 };
 
 document.getElementById('bSim').onclick = () => {
-  S.navigating = true; S.simulating = true;
+  S.navigating = true; S.simulating = true; S.follow = true;
   document.getElementById('banner').classList.add('on');
   document.getElementById('bStart').style.display = 'none'; document.getElementById('bSim').style.display = 'none';
   document.getElementById('sim-controls').style.display = 'flex';
@@ -532,7 +698,7 @@ document.getElementById('bSim').onclick = () => {
   S.simTimer = setInterval(() => {
     S.simDist += (18 * S.simSpeed);
     if (S.simDist >= total) S.simDist = total;
-    S.speed = 85;
+    S.speed = 115;
     const pt = pointAt(S.coords, S.cum, S.simDist);
     S.pos = pt.p; S.heading = pt.h;
     me.setLngLat(S.pos);
@@ -551,16 +717,16 @@ document.getElementById('bSim').onclick = () => {
 });
 
 document.getElementById('bVoice').onclick = () => {
-  if (S.voiceMode === 'EN') { S.voiceMode = 'BM'; document.getElementById('bVoice').textContent = '🔊 BM'; }
-  else if (S.voiceMode === 'BM') { S.voiceMode = 'Manglish'; document.getElementById('bVoice').textContent = '🔊 Manglish'; }
-  else if (S.voiceMode === 'Manglish') { S.voiceMode = 'OFF'; document.getElementById('bVoice').textContent = '🔇 OFF'; }
-  else { S.voiceMode = 'EN'; document.getElementById('bVoice').textContent = '🔊 EN'; }
-  toast('Voice language set to: ' + S.voiceMode);
+  if (S.voiceMode === 'EN') { S.voiceMode = 'BM'; document.getElementById('bVoice').textContent = ' BM'; }
+  else if (S.voiceMode === 'BM') { S.voiceMode = 'Manglish'; document.getElementById('bVoice').textContent = ' Manglish'; }
+  else if (S.voiceMode === 'Manglish') { S.voiceMode = 'OFF'; document.getElementById('bVoice').textContent = ' OFF'; }
+  else { S.voiceMode = 'EN'; document.getElementById('bVoice').textContent = ' EN'; }
+  toast('Voice mode set to: ' + S.voiceMode);
 };
 
 document.getElementById('bEnd').onclick = endNav;
 function endNav() {
-  S.navigating = false; S.simulating = false; clearInterval(S.simTimer);
+  S.navigating = false; S.simulating = false; S.follow = false; clearInterval(S.simTimer);
   document.getElementById('banner').classList.remove('on');
   document.getElementById('bStart').style.display = 'none'; document.getElementById('bSim').style.display = 'none'; document.getElementById('bEnd').style.display = 'none';
   document.getElementById('sim-controls').style.display = 'none';
