@@ -95,7 +95,7 @@
 
 <div id="top">
   <div id="banner" class="card">
-    <div id="icon"></div>
+    <div id="icon"></div>
     <div id="bd"><div id="bdist">0 m</div><div id="btext">—</div></div>
     <div class="speed-group">
       <div id="speedlimit"><b id="limv">90</b><small>LIMIT</small></div>
@@ -125,7 +125,7 @@
       <div id="logo-text">
         <b>MALAYSIA</b>
         <small>PETA</small>
-        <div class="beta-tag">Beta Version</div>
+        <div class="beta-tag">Beta v1.9.3</div>
       </div>
     </div>
   </div>
@@ -154,7 +154,7 @@
     <div class="btns">
       <button id="bStart" class="pri" style="display:none"> Start</button>
       <button id="bSim" style="display:none"> Simulate</button>
-      <button id="bReportBtn" class="dng"> Report</button>
+      <button id="bReportBtn" class="dng"> Report</button>
       <button id="bAesToggle" class="pri"> AES: ON</button>
       <button id="bVoice"> EN</button>
       <button id="bView">3D: ON</button>
@@ -217,8 +217,8 @@ function maneuverIcon(type, mod, instructionText = '') {
   if (type === 'arrive') return '';
   if (type === 'roundabout' || type === 'rotary' || type === 'roundabout turn') return '';
   if (mod === 'uturn' || txt.includes('u-turn')) return '';
-  if (mod === 'sharp left' || txt.includes('sharp left')) return '';
-  if (mod === 'sharp right' || txt.includes('sharp right')) return '';
+  if (mod === 'sharp left' || txt.includes('sharp left')) return '';
+  if (mod === 'sharp right' || txt.includes('sharp right')) return '';
   if (mod === 'left' || txt.includes('left')) return '';
   if (mod === 'right' || txt.includes('right')) return '';
   if (mod === 'slight left' || txt.includes('slight left')) return '';
@@ -616,12 +616,11 @@ function onPosition(gpsDriven) {
     }
   }
 
+  // v1.7 feature: Check route deviation & silent recalculation (no voice spam)
   if (nr.offset > 40) {
     S.offRouteCount = (S.offRouteCount || 0) + 1;
     if (S.offRouteCount > 3 && !S.rerouting) {
       S.rerouting = true;
-      toast('Off route detected. Recalculating...', 2500);
-      speak('Recalculating route.');
       fetchRoute().then(() => { S.rerouting = false; S.offRouteCount = 0; });
     }
   } else {
@@ -672,6 +671,7 @@ function onPosition(gpsDriven) {
     return;
   }
 
+  // v1.8 feature: Aggressive auto-recenter & auto zoom-in (Zoom 17) during navigation
   if (S.follow) {
     map.easeTo({ center: S.pos, bearing: S.is3D ? S.heading : map.getBearing(), pitch: S.is3D ? 65 : 0, zoom: 17, duration: gpsDriven ? 900 : 300, easing: t => t });
   }
