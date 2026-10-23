@@ -1,482 +1,578 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Malaysia Peta - GPS Navigation</title>
-    <!-- MapLibre GL CSS -->
-    <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
-    <style>
-        body, html {
-            margin: 0;
-            padding: 0;
-            width: 100%;
-            height: 100%;
-            overflow: hidden;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background-color: #121212;
-            color: #ffffff;
-        }
-        #map {
-            width: 100%;
-            height: 100%;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 1;
-        }
-        /* Top Search & Control Bar */
-        .top-bar {
-            position: absolute;
-            top: 15px;
-            left: 15px;
-            right: 15px;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        .search-box-wrapper {
-            display: flex;
-            background: #1e1e1e;
-            border: 1px solid #333;
-            border-radius: 12px;
-            padding: 4px;
-            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
-        }
-        #search-input {
-            flex: 1;
-            background: transparent;
-            border: none;
-            color: #fff;
-            padding: 12px 15px;
-            font-size: 16px;
-            outline: none;
-        }
-        .search-btn, .clear-btn {
-            background: #ffcc00;
-            border: none;
-            color: #000;
-            font-weight: bold;
-            padding: 10px 18px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .clear-btn {
-            background: #333;
-            color: #fff;
-            margin-left: 4px;
-            display: none;
-        }
-        /* Suggestions Dropdown */
-        #suggestions {
-            background: #1e1e1e;
-            border: 1px solid #333;
-            border-radius: 8px;
-            max-height: 200px;
-            overflow-y: auto;
-            display: none;
-        }
-        .suggestion-item {
-            padding: 12px 15px;
-            border-bottom: 1px solid #2a2a2a;
-            font-size: 14px;
-            cursor: pointer;
-        }
-        .suggestion-item:hover {
-            background: #2a2a2a;
-        }
-        /* Floating Brand Logo Badge */
-        .brand-badge {
-            position: absolute;
-            bottom: 30px;
-            left: 15px;
-            z-index: 10;
-            background: rgba(30, 30, 30, 0.9);
-            border: 1px solid #444;
-            padding: 8px 14px;
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: center;
-            pointer-events: none;
-        }
-        .brand-title {
-            font-size: 14px;
-            font-weight: 900;
-            letter-spacing: 1px;
-            color: #ffffff;
-            width: 100%;
-        }
-        .brand-title span {
-            color: #ffcc00;
-        }
-        .brand-subtitle {
-            font-size: 9px;
-            font-weight: bold;
-            color: #aaaaaa;
-            margin-top: 2px;
-            letter-spacing: 0.5px;
-            text-transform: uppercase;
-            width: 100%;
-        }
-        /* Floating Action Buttons */
-        .fab-container {
-            position: absolute;
-            right: 15px;
-            bottom: 30px;
-            z-index: 10;
-            display: flex;
-            flex-direction: column;
-            gap: 12px;
-        }
-        .fab {
-            background: #1e1e1e;
-            border: 1px solid #444;
-            color: #fff;
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 20px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
-            cursor: pointer;
-        }
-        .fab.active-aes {
-            background: #ff4444;
-            border-color: #ff0000;
-        }
-        /* Navigation HUD Overlay */
-        .nav-hud {
-            position: absolute;
-            top: 80px;
-            left: 15px;
-            right: 15px;
-            background: rgba(20, 20, 20, 0.95);
-            border: 1px solid #ffcc00;
-            border-radius: 12px;
-            padding: 15px;
-            z-index: 10;
-            display: none;
-            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
-        }
-        .nav-instruction {
-            font-size: 18px;
-            font-weight: bold;
-            color: #ffcc00;
-            margin-bottom: 5px;
-        }
-        .nav-sub {
-            font-size: 13px;
-            color: #ccc;
-            display: flex;
-            justify-content: space-between;
-        }
-        .stop-nav-btn {
-            background: #ff4444;
-            color: white;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 6px;
-            font-weight: bold;
-            cursor: pointer;
-            margin-top: 10px;
-            float: right;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Malaysia Boleh Peta</title>
+<link href="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.css" rel="stylesheet">
+<style>
+  :root{--bg:rgba(15,23,42,.9);--line:rgba(255,255,255,.12);--cy:#22d3ee;--tx:#f1f5f9;--mut:#94a3b8}
+  *{box-sizing:border-box}
+  html,body{margin:0;height:100%;overflow:hidden;background:#0b0f19;color:var(--tx);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+  #map{position:absolute;inset:0}
+  .card{background:var(--bg);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border:1px solid var(--line);border-radius:18px;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+  #top{position:absolute;top:0;left:0;right:0;z-index:5;padding:10px;display:flex;flex-direction:column;gap:8px;pointer-events:none}
+  #top>*{pointer-events:auto}
+  
+  #toprow{display:flex;gap:8px;align-items:center}
+  #searchrow{display:flex;flex-direction:column;gap:6px;padding:8px;position:relative;flex:2;min-width:0}
+  .s-input-group{display:flex;gap:6px}
+  
+  #logo-badge{
+    flex:1;display:flex;align-items:center;justify-content:center;gap:6px;
+    padding:4px 8px;background:linear-gradient(135deg, #090d16 0%, #111c30 100%);
+    border:1px solid rgba(234,179,8,0.4);border-radius:18px;height:53px;box-shadow:0 10px 30px rgba(0,0,0,.4);
+  }
+  #logo-badge svg{width:26px;height:28px;flex:none}
+  #logo-text{display:flex;flex-direction:column;justify-content:center;line-height:1.1}
+  #logo-text b{font-size:8px;color:#facc15;white-space:nowrap;font-weight:700;letter-spacing:.03em}
+  #logo-text small{font-size:8px;color:#facc15;letter-spacing:.03em;white-space:nowrap;font-weight:700}
+
+  #banner{display:none;align-items:center;gap:12px;padding:12px}
+  #banner.on{display:flex}
+  #icon{width:52px;height:52px;border-radius:14px;background:rgba(34,211,238,.18);border:1px solid rgba(34,211,238,.4);display:grid;place-items:center;font-size:28px;flex:none}
+  #bd{flex:1;min-width:0}
+  #bdist{font:700 20px ui-monospace,monospace;color:var(--cy)}
+  #btext{font-size:14px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  #spd{text-align:center;flex:none;padding:6px 10px;border-radius:12px;background:rgba(2,6,23,.6);border:1px solid var(--line)}
+  #spd b{display:block;font:700 18px ui-monospace,monospace;color:#34d399}
+  #spd small{font-size:9px;color:var(--mut);letter-spacing:.08em}
+  
+  input.q-field{flex:1;background:rgba(2,6,23,.6);border:1px solid var(--line);border-radius:10px;color:var(--tx);padding:8px 10px;font-size:13px;outline:none;min-width:0}
+  input.q-field:focus{border-color:var(--cy)}
+  button{font:600 13px system-ui;border:0;border-radius:12px;padding:8px 12px;cursor:pointer;color:#fff;background:#334155}
+  button:active{transform:scale(.96)}
+  .pri{background:linear-gradient(90deg,#06b6d4,#2563eb)}
+  .dng{background:#be123c}
+  .results{position:absolute;top:100%;left:8px;right:8px;margin-top:4px;max-height:35vh;overflow:auto;display:none;z-index:9}
+  .results.on{display:block}
+  .results div{padding:8px 10px;font-size:12px;border-bottom:1px solid var(--line);cursor:pointer;background:rgba(15,23,42,.95)}
+  .results div:hover{background:rgba(255,255,255,.15)}
+  .results small{color:var(--mut);display:block;margin-top:2px}
+
+  #bottom{position:absolute;left:0;right:0;bottom:0;z-index:5;padding:10px;pointer-events:none}
+  #panel{padding:12px;pointer-events:auto}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:10px}
+  .stat{background:rgba(2,6,23,.6);border:1px solid var(--line);border-radius:12px;padding:8px 6px;text-align:center}
+  .stat span{font-size:9px;color:var(--mut);display:block;white-space:nowrap}
+  .stat b{font:700 15px ui-monospace,monospace}
+  .btns{display:flex;gap:8px;flex-wrap:wrap}
+  .btns button{flex:1;min-width:70px}
+  #toast{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);z-index:20;padding:10px 16px;font-size:13px;display:none;max-width:80%;text-align:center}
+  
+  #cat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:5px;margin-bottom:8px}
+  #cat-row button{padding:6px 4px;font-size:10px;background:rgba(30,41,59,0.8);border:1px solid var(--line);white-space:nowrap}
+  #sim-controls{display:none;gap:6px;margin-top:6px}
+  
+  .me{width:26px;height:32px;background:#ef4444;clip-path:polygon(50% 0%, 0% 100%, 100% 100%);filter:drop-shadow(0 3px 6px rgba(0,0,0,0.6));transform-origin:center 70%;}
+  .dest{background:#f43f5e;color:#fff;font:700 11px system-ui;padding:4px 9px;border-radius:8px;border:1px solid #ffe4e6;box-shadow:0 4px 14px rgba(244,63,94,.5);white-space:nowrap}
+  .poi-pin{background:#0e7490;color:#fff;font:700 11px system-ui;padding:4px 8px;border-radius:8px;border:1px solid #22d3ee;box-shadow:0 4px 14px rgba(0,0,0,.5);white-space:nowrap}
+  .aes-pin{background:#b91c1c;color:#fff;font:700 10px system-ui;padding:3px 6px;border-radius:6px;border:1px solid #f87171;box-shadow:0 2px 8px rgba(0,0,0,.5);white-space:nowrap}
+  .maplibregl-ctrl-bottom-left,.maplibregl-ctrl-bottom-right{margin-bottom:160px}
+</style>
 </head>
 <body>
+<div id="map"></div>
 
-    <div id="map"></div>
-
-    <!-- Top Search Bar -->
-    <div class="top-bar">
-        <div class="search-box-wrapper">
-            <input type="text" id="search-input" placeholder="Search destination in Malaysia..." autocomplete="off">
-            <button class="clear-btn" id="clear-btn" onclick="clearSearch()"></button>
-            <button class="search-btn" onclick="executeSearch()">Search</button>
-        </div>
-        <div id="suggestions"></div>
+<div id="top">
+  <div id="banner" class="card">
+    <div id="icon">⬆️</div>
+    <div id="bd"><div id="bdist">0 m</div><div id="btext">—</div></div>
+    <div id="spd"><b id="spdv">0</b><small>KM/H</small></div>
+  </div>
+  
+  <div id="toprow">
+    <div class="card" id="searchrow">
+      <div class="s-input-group">
+        <input id="qDest" class="q-field" placeholder="Search Klang Valley destination…" autocomplete="off">
+        <button class="pri" id="go">Go</button>
+      </div>
+      <div class="s-input-group">
+        <input id="qVia" class="q-field" placeholder="+ Add stopover / waypoint (Optional)…" autocomplete="off">
+      </div>
+      <div id="resultsDest" class="results card"></div>
+      <div id="resultsVia" class="results card"></div>
     </div>
-
-    <!-- Navigation HUD -->
-    <div class="nav-hud" id="nav-hud">
-        <div class="nav-instruction" id="nav-instruction">Proceed to destination</div>
-        <div class="nav-sub">
-            <span id="nav-distance">Distance: 0m</span>
-            <span id="nav-eta">ETA: 0 min</span>
-        </div>
-        <button class="stop-nav-btn" onclick="stopNavigation()">Stop Navigation</button>
+    
+    <div id="logo-badge">
+      <svg viewBox="0 0 100 110" fill="none">
+        <path d="M36 100V35L42 12H45L51 35V100" stroke="#facc15" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M53 100V40L59 17H62L68 40V100" stroke="#facc15" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+        <path d="M22 88C32 108 72 102 82 82" stroke="#eab308" stroke-width="5" stroke-linecap="round"/>
+      </svg>
+      <div id="logo-text">
+        <b>MALAYSIA</b>
+        <small>BOLEH</small>
+      </div>
     </div>
+  </div>
+</div>
 
-    <!-- Branding Badge -->
-    <div class="brand-badge">
-        <div class="brand-title">MALAYSIA <span>PETA</span></div>
-        <div class="brand-subtitle">Beta v1.9.1</div>
+<div id="toast" class="card"></div>
+
+<div id="bottom">
+  <div id="panel" class="card">
+    <div id="cat-row">
+      <button id="btnPetrol">⛽ Petrol</button>
+      <button id="btnAtm">💳 ATM</button>
+      <button id="btnFood">🍜 Food</button>
+      <button id="btnEv">⚡ EV Charger</button>
     </div>
-
-    <!-- Floating Buttons -->
-    <div class="fab-container">
-        <div class="fab" id="aes-fab" onclick="toggleAES()" title="Toggle AES Cameras"></div>
-        <div class="fab" onclick="recenterMap()" title="Recenter GPS"></div>
+    <div class="stats">
+      <div class="stat"><span>Distance</span><b id="sdist">--</b></div>
+      <div class="stat"><span>Time</span><b id="stime" style="color:var(--cy)">--</b></div>
+      <div class="stat"><span>ETA</span><b id="seta">--</b></div>
+      <div class="stat"><span>Est. Toll</span><b id="stoll" style="color:#fbbf24">RM 0.00</b></div>
     </div>
+    <div class="btns">
+      <button id="bStart" class="pri" style="display:none">▶ Start</button>
+      <button id="bSim" style="display:none">🚗 Simulate</button>
+      <button id="bVoice">🔊 EN</button>
+      <button id="bView">3D: ON</button>
+      <button id="bRecenter">◎ Recenter</button>
+      <button id="bEnd" class="dng" style="display:none">End</button>
+    </div>
+    <div id="sim-controls">
+      <button id="sim1x" class="pri">1x</button>
+      <button id="sim2x">2x</button>
+      <button id="sim3x">3x</button>
+    </div>
+  </div>
+</div>
 
-    <!-- MapLibre GL JS -->
-    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
-    <script>
-        // Initialize Map centered over Kuala Lumpur
-        const map = new maplibregl.Map({
-            container: 'map',
-            style: {
-                version: 8,
-                sources: {
-                    'osm': {
-                        type: 'raster',
-                        tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-                        tileSize: 256,
-                        attribution: '&copy; OpenStreetMap Contributors'
-                    }
-                },
-                layers: [{
-                    id: 'osm-tiles',
-                    type: 'raster',
-                    source: 'osm',
-                    minzoom: 0,
-                    maxzoom: 19
-                }]
-            },
-            center: [101.6869, 3.1390],
-            zoom: 13,
-            pitch: 45,
-            bearing: 0
+<script src="https://unpkg.com/maplibre-gl@4.7.1/dist/maplibre-gl.js"></script>
+<script>
+const R = 6371008.8;
+const rad = d => d * Math.PI / 180, deg = r => r * 180 / Math.PI;
+function haversine(a, b) {
+  const dLat = rad(b[1] - a[1]), dLng = rad(b[0] - a[0]);
+  const s = Math.sin(dLat / 2) ** 2 + Math.cos(rad(a[1])) * Math.cos(rad(b[1])) * Math.sin(dLng / 2) ** 2;
+  return 2 * R * Math.asin(Math.sqrt(s));
+}
+function bearing(a, b) {
+  const y = Math.sin(rad(b[0] - a[0])) * Math.cos(rad(b[1]));
+  const x = Math.cos(rad(a[1])) * Math.sin(rad(b[1])) - Math.sin(rad(a[1])) * Math.cos(rad(b[1])) * Math.cos(rad(b[0] - a[0]));
+  return (deg(Math.atan2(y, x)) + 360) % 360;
+}
+function fmtDist(m) { return m >= 1000 ? (m / 1000).toFixed(m >= 10000 ? 0 : 1) + ' km' : Math.max(0, Math.round(m / 10) * 10) + ' m'; }
+function fmtTime(s) {
+  const m = Math.max(1, Math.round(s / 60));
+  return m >= 60 ? Math.floor(m / 60) + 'h ' + (m % 60) + 'm' : m + ' min';
+}
+function cumulative(coords) {
+  const c = [0];
+  for (let i = 1; i < coords.length; i++) c.push(c[i - 1] + haversine(coords[i - 1], coords[i]));
+  return c;
+}
+function pointAt(coords, cum, d) {
+  if (d <= 0) return { p: coords[0], h: bearing(coords[0], coords[1] || coords[0]), i: 0 };
+  const total = cum[cum.length - 1];
+  if (d >= total) { const n = coords.length; return { p: coords[n - 1], h: bearing(coords[n - 2] || coords[n - 1], coords[n - 1]), i: n - 1 }; }
+  let lo = 0, hi = cum.length - 1;
+  while (hi - lo > 1) { const m = (lo + hi) >> 1; if (cum[m] <= d) lo = m; else hi = m; }
+  const t = (d - cum[lo]) / ((cum[hi] - cum[lo]) || 1);
+  const a = coords[lo], b = coords[hi];
+  return { p: [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t], h: bearing(a, b), i: lo };
+}
+function nearestOnRoute(coords, cum, pt, fromIdx = 0, window = 80) {
+  let best = Infinity, bi = fromIdx;
+  const end = Math.min(coords.length, fromIdx + window);
+  for (let i = fromIdx; i < end; i++) { const d = haversine(coords[i], pt); if (d < best) { best = d; bi = i; } }
+  return { idx: bi, progress: cum[bi], offset: best };
+}
+function stepEnds(steps) { let s = 0; return steps.map(st => (s += st.distance)); }
+function stepIndexAt(ends, d) { for (let i = 0; i < ends.length; i++) if (d < ends[i]) return i; return ends.length - 1; }
+
+function maneuverIcon(type, mod, instructionText = '') {
+  const txt = (instructionText || '').toLowerCase();
+  if (type === 'arrive') return '📍';
+  if (type === 'roundabout' || type === 'rotary' || type === 'roundabout turn') return '🔄';
+  if (mod === 'uturn' || txt.includes('u-turn')) return '↩️';
+  if (mod === 'sharp left' || txt.includes('sharp left')) return '↰';
+  if (mod === 'sharp right' || txt.includes('sharp right')) return '↱';
+  if (mod === 'left' || txt.includes('turn left')) return '⬅️';
+  if (mod === 'right' || txt.includes('turn right')) return '➡️';
+  if (mod === 'slight left' || txt.includes('keep left')) return '↖️';
+  if (mod === 'slight right' || txt.includes('keep right')) return '↗️';
+  return '⬆️';
+}
+
+function instruction(step, lang = 'EN') {
+  const m = step.maneuver || {}, type = m.type, mod = m.modifier || '';
+  const road = step.name ? step.name : '';
+  
+  if (lang === 'BM') {
+    if (type === 'depart') return road ? 'Mulakan perjalanan di ' + road : 'Mulakan pemanduan';
+    if (type === 'arrive') return 'Anda telah sampai di destinasi';
+    if (mod.includes('left')) return road ? 'Belok kiri ke ' + road : 'Belok kiri di hadapan';
+    if (mod.includes('right')) return road ? 'Belok kanan ke ' + road : 'Belok kanan di hadapan';
+    return road ? 'Teruskan pemanduan di ' + road : 'Teruskan lurus';
+  }
+  
+  if (lang === 'Manglish') {
+    if (type === 'depart') return road ? 'Steady, start drive on ' + road : 'Steady, let\'s go!';
+    if (type === 'arrive') return 'Arrived already, boss! Destinasi reached.';
+    if (mod.includes('left')) return road ? 'Eh, turn left hor into ' + road : 'Sikit left here hor';
+    if (mod.includes('right')) return road ? 'Faster turn right into ' + road : 'Chop chop, turn right here';
+    return road ? 'Go straight only, follow ' + road : 'Straight ahead, don\'t worry';
+  }
+
+  // Standard EN
+  const onto = road ? ' onto ' + road : '';
+  switch (type) {
+    case 'depart': return 'Head ' + (mod ? mod : 'out') + (road ? ' on ' + road : '');
+    case 'arrive': return 'Arrive at your destination';
+    case 'roundabout': return 'At roundabout take exit ' + (m.exit || '') + onto;
+    case 'merge': return 'Merge ' + (mod || '') + onto;
+    default: return 'Turn ' + (mod || 'ahead') + onto;
+  }
+}
+
+function spokenAt(step, distAhead, lang) {
+  const d = distAhead > 80 ? 'In ' + Math.round(distAhead / 50) * 50 + ' metres, ' : '';
+  return d + instruction(step, lang).toLowerCase();
+}
+
+function estimateToll(steps) {
+  let toll = 0;
+  const rates = { 'ldp': 2.10, 'kesas': 2.00, 'npe': 2.30, 'sprint': 2.50, 'nkve': 3.50, 'PLUS': 4.00, 'duke': 2.50 };
+  steps.forEach(st => {
+    const name = (st.name || '').toLowerCase();
+    for (const [k, cost] of Object.entries(rates)) { if (name.includes(k)) { toll += cost; break; } }
+  });
+  return Math.round(toll * 100) / 100;
+}
+
+const DEFAULT = [101.6869, 3.1390];
+const KV = [[101.25, 2.65], [102.0, 3.50]];
+const OSRM = 'https://router.project-osrm.org/route/v1/driving/';
+const NOMINATIM = 'https://nominatim.openstreetmap.org/search';
+const OVERPASS = 'https://overpass-api.de/api/interpreter';
+
+// Sample Malaysian Highway AES Cameras
+const AES_CAMERAS = [
+  { name: 'PLUS Highway KM 375.9 (Slim River)', lngLat: [101.405, 3.820], limit: 110 },
+  { name: 'NKVE Highway KM 26.2 (Subang)', lngLat: [101.579, 3.105], limit: 90 },
+  { name: 'KESAS Highway KM 41.5 (Sunway)', lngLat: [101.605, 3.065], limit: 80 }
+];
+
+const S = {
+  pos: DEFAULT.slice(), heading: 0, hasGps: false, dest: null, via: null, route: null, coords: [], cum: [], steps: [], ends: [],
+  progress: 0, idx: 0, navigating: false, simulating: false, simDist: 0, simTimer: null, simSpeed: 1, is3D: true, voiceMode: 'EN', follow: true,
+  lastStep: -1, announced: {}, speed: 0, offRouteCount: 0, rerouting: false, lastAesAlert: 0
+};
+
+const map = new maplibregl.Map({
+  container: 'map',
+  style: 'https://tiles.openfreemap.org/styles/liberty',
+  center: DEFAULT, zoom: 12.5, pitch: 60, bearing: 0, maxPitch: 75,
+  maxBounds: [[KV[0][0]-0.15, KV[0][1]-0.15], [KV[1][0]+0.15, KV[1][1]+0.15]],
+  attributionControl: { compact: true }
+});
+map.addControl(new maplibregl.NavigationControl({ visualizePitch: true }), 'bottom-right');
+
+const meEl = document.createElement('div'); meEl.className = 'me';
+const me = new maplibregl.Marker({ element: meEl, pitchAlignment: 'map', rotationAlignment: 'map' }).setLngLat(S.pos).addTo(map);
+let destMarker = null, viaMarker = null, poiMarkers = [], aesMarkers = [];
+
+function toast(msg, ms = 2600) { const t = document.getElementById('toast'); t.textContent = msg; t.style.display = 'block'; clearTimeout(t._t); t._t = setTimeout(() => t.style.display = 'none', ms); }
+function speak(text) {
+  if (S.voiceMode === 'OFF' || !('speechSynthesis' in window)) return;
+  try {
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(text);
+    u.lang = S.voiceMode === 'BM' ? 'ms-MY' : 'en-GB';
+    speechSynthesis.speak(u);
+  } catch (e) {}
+}
+
+map.on('style.load', () => {
+  const layers = map.getStyle().layers || [];
+  const label = layers.find(l => l.type === 'symbol' && l.layout && l.layout['text-field']);
+  if (!layers.some(l => l.type === 'fill-extrusion') && map.getSource('openmaptiles')) {
+    map.addLayer({
+      id: '3d-buildings', source: 'openmaptiles', 'source-layer': 'building', type: 'fill-extrusion', minzoom: 14,
+      paint: {
+        'fill-extrusion-color': ['interpolate', ['linear'], ['coalesce', ['get', 'render_height'], 8], 0, '#243049', 60, '#3b4a6b', 200, '#5b6f9c'],
+        'fill-extrusion-height': ['coalesce', ['get', 'render_height'], 8],
+        'fill-extrusion-base': ['coalesce', ['get', 'render_min_height'], 0],
+        'fill-extrusion-opacity': 0.88
+      }
+    }, label && label.id);
+  }
+
+  if (!map.getSource('route')) {
+    map.addSource('route', { type: 'geojson', data: { type: 'FeatureCollection', features: [] } });
+    map.addLayer({ id: 'route-casing', type: 'line', source: 'route', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#082f49', 'line-width': 11 } });
+    map.addLayer({ id: 'route', type: 'line', source: 'route', layout: { 'line-join': 'round', 'line-cap': 'round' }, paint: { 'line-color': '#22d3ee', 'line-width': 6 } });
+  }
+
+  // Render AES Cameras
+  AES_CAMERAS.forEach(cam => {
+    const el = document.createElement('div'); el.className = 'aes-pin'; el.textContent = '📸 AES';
+    const m = new maplibregl.Marker({ element: el }).setLngLat(cam.lngLat).addTo(map);
+    aesMarkers.push(m);
+  });
+
+  startGps();
+});
+
+function startGps(hi = true) {
+  if (!navigator.geolocation) return;
+  navigator.geolocation.watchPosition(p => {
+    if (S.simulating) return;
+    const prev = S.pos;
+    S.pos = [p.coords.longitude, p.coords.latitude];
+    if (!S.hasGps) { S.hasGps = true; map.jumpTo({ center: S.pos, zoom: 15.5 }); }
+    if (p.coords.heading != null && !isNaN(p.coords.heading)) S.heading = p.coords.heading;
+    else if (haversine(prev, S.pos) > 3) S.heading = bearing(prev, S.pos);
+    S.speed = p.coords.speed != null ? Math.round(p.coords.speed * 3.6) : 0;
+    me.setLngLat(S.pos);
+    meEl.style.transform = `rotate(${S.heading}deg)`;
+    if (S.navigating) onPosition(true); else document.getElementById('spdv').textContent = S.speed;
+  }, () => {}, { enableHighAccuracy: hi, maximumAge: 5000, timeout: 20000 });
+}
+
+function setupSearch(inputId, resultsId, onSelect) {
+  const input = document.getElementById(inputId);
+  const box = document.getElementById(resultsId);
+  let debounce;
+  input.addEventListener('input', () => {
+    clearTimeout(debounce);
+    const q = input.value.trim();
+    if (q.length < 3) { box.classList.remove('on'); return; }
+    debounce = setTimeout(async () => {
+      try {
+        const r = await fetch(`${NOMINATIM}?format=jsonv2&limit=5&countrycodes=my&q=${encodeURIComponent(q)}&bounded=1&viewbox=${KV[0][0]},${KV[1][1]},${KV[1][0]},${KV[0][1]}`);
+        const items = await r.json();
+        box.innerHTML = '';
+        if (!items.length) { box.innerHTML = '<div>No results</div>'; box.classList.add('on'); return; }
+        items.forEach(it => {
+          const d = document.createElement('div');
+          const parts = it.display_name.split(', ');
+          d.innerHTML = `<b>${parts[0]}</b><small>${parts.slice(1, 3).join(', ')}</small>`;
+          d.onclick = () => { box.classList.remove('on'); input.value = parts[0]; onSelect([+it.lon, +it.lat], parts[0]); };
+          box.appendChild(d);
         });
+        box.classList.add('on');
+      } catch (e) {}
+    }, 450);
+  });
+  document.addEventListener('click', e => { if (!input.contains(e.target)) box.classList.remove('on'); });
+}
 
-        let userLocation = [101.6869, 3.1390];
-        let destinationCoords = null;
-        let isNavigating = false;
-        let aesVisible = true;
-        let watchId = null;
-        let lastRecalculateTime = 0;
+setupSearch('qDest', 'resultsDest', (lngLat, name) => {
+  S.dest = { name, lngLat };
+  if (destMarker) destMarker.remove();
+  const el = document.createElement('div'); el.className = 'dest'; el.textContent = '📍 ' + name;
+  destMarker = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
+  fetchRoute();
+});
 
-        // Geolocation tracking with aggressive auto-recenter & zoom during navigation
-        if ('geolocation' in navigator) {
-            watchId = navigator.geolocation.watchPosition(
-                (position) => {
-                    userLocation = [position.coords.longitude, position.coords.latitude];
-                    updateUserMarker(userLocation);
-                    
-                    if (isNavigating) {
-                        map.easeTo({
-                            center: userLocation,
-                            zoom: 17,
-                            pitch: 45,
-                            bearing: position.coords.heading || 0,
-                            duration: 800
-                        });
-                        checkRouteDeviation(userLocation);
-                    }
-                },
-                (error) => { console.error('GPS Error:', error); },
-                { enableHighAccuracy: true, maximumAge: 5000, timeout: 5000 }
-            );
-        }
+setupSearch('qVia', 'resultsVia', (lngLat, name) => {
+  S.via = { name, lngLat };
+  if (viaMarker) viaMarker.remove();
+  const el = document.createElement('div'); el.className = 'dest'; el.style.background = '#d97706'; el.textContent = 'stop: ' + name;
+  viaMarker = new maplibregl.Marker({ element: el, anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
+  fetchRoute();
+});
 
-        let userMarker = null;
-        function updateUserMarker(coords) {
-            if (!userMarker) {
-                const el = document.createElement('div');
-                el.style.width = '24px';
-                el.style.height = '24px';
-                el.style.backgroundColor = '#007AFF';
-                el.style.border = '3px solid #ffffff';
-                el.style.borderRadius = '50%';
-                el.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
-                userMarker = new maplibregl.Marker(el).setLngLat(coords).addTo(map);
-            } else {
-                userMarker.setLngLat(coords);
-            }
-        }
+document.getElementById('go').onclick = () => { if (S.dest) fetchRoute(); };
 
-        function recenterMap() {
-            map.flyTo({ center: userLocation, zoom: 17, pitch: 45, bearing: 0, duration: 1000 });
-        }
+async function searchCategory(amenityType, title) {
+  toast(`Searching nearest ${title}...`);
+  const query = `[out:json][timeout:10];(node["amenity"="${amenityType}"](around:5000,${S.pos[1]},${S.pos[0]});way["amenity"="${amenityType}"](around:5000,${S.pos[1]},${S.pos[0]}););out body;>;out skel qt 5;`;
+  try {
+    const res = await fetch(OVERPASS, { method: 'POST', body: query });
+    const data = await res.json();
+    const elements = data.elements.filter(el => el.lat && el.lon);
+    if (!elements.length) { toast(`No ${title} found nearby.`); return; }
+    
+    poiMarkers.forEach(m => m.remove()); poiMarkers = [];
+    const el = elements[0];
+    const lngLat = [el.lon, el.lat];
+    const name = el.tags.name || title;
+    
+    const pinEl = document.createElement('div'); pinEl.className = 'poi-pin'; pinEl.textContent = '📍 ' + name;
+    const m = new maplibregl.Marker({ element: pinEl, anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
+    poiMarkers.push(m);
 
-        // Search Input & Autocomplete with Nominatim
-        const searchInput = document.getElementById('search-input');
-        const clearBtn = document.getElementById('clear-btn');
-        const suggestionsBox = document.getElementById('suggestions');
+    S.dest = { name, lngLat };
+    document.getElementById('qDest').value = name;
+    if (destMarker) destMarker.remove();
+    destMarker = new maplibregl.Marker({ element: document.createElement('div'), anchor: 'bottom' }).setLngLat(lngLat).addTo(map);
+    fetchRoute();
+    toast(`Found: ${name}`);
+  } catch (e) { toast('Category search failed'); }
+}
 
-        searchInput.addEventListener('input', function() {
-            const query = this.value.trim();
-            clearBtn.style.display = query ? 'block' : 'none';
-            if (query.length < 3) {
-                suggestionsBox.style.display = 'none';
-                return;
-            }
+document.getElementById('btnPetrol').onclick = () => searchCategory('fuel', 'Petrol');
+document.getElementById('btnAtm').onclick = () => searchCategory('atm', 'ATM');
+document.getElementById('btnFood').onclick = () => searchCategory('restaurant', 'Food');
+document.getElementById('btnEv').onclick = () => searchCategory('charging_station', 'EV Charger');
 
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ' Malaysia')}&countrycodes=my`)
-                .then(res => res.json())
-                .then(data => {
-                    suggestionsBox.innerHTML = '';
-                    if (data.length > 0) {
-                        suggestionsBox.style.display = 'block';
-                        data.forEach(place => {
-                            const div = document.createElement('div');
-                            div.className = 'suggestion-item';
-                            div.innerText = place.display_name;
-                            div.onclick = () => {
-                                searchInput.value = place.display_name;
-                                suggestionsBox.style.display = 'none';
-                                clearBtn.style.display = 'block';
-                                destinationCoords = [parseFloat(place.lon), parseFloat(place.lat)];
-                                startNavigationTo(destinationCoords);
-                            };
-                            suggestionsBox.appendChild(div);
-                        });
-                    } else {
-                        suggestionsBox.style.display = 'none';
-                    }
-                })
-                .catch(err => console.error('Search error:', err));
-        });
+async function fetchRoute() {
+  if (!S.dest) return;
+  const coordsStr = S.via ? `${S.pos[0]},${S.pos[1]};${S.via.lngLat[0]},${S.via.lngLat[1]};${S.dest.lngLat[0]},${S.dest.lngLat[1]}` : `${S.pos[0]},${S.pos[1]};${S.dest.lngLat[0]},${S.dest.lngLat[1]}`;
+  try {
+    const r = await fetch(`${OSRM}${coordsStr}?overview=full&geometries=geojson&steps=true`);
+    const j = await r.json();
+    if (j.code !== 'Ok' || !j.routes.length) { toast('No route found'); return; }
+    
+    S.route = j.routes[0]; S.coords = S.route.geometry.coordinates; S.cum = cumulative(S.coords);
+    S.steps = S.route.legs.flatMap(l => l.steps); S.ends = stepEnds(S.steps);
+    S.progress = 0; S.idx = 0; S.lastStep = -1; S.announced = {};
 
-        function clearSearch() {
-            searchInput.value = '';
-            clearBtn.style.display = 'none';
-            suggestionsBox.style.display = 'none';
-            stopNavigation();
-        }
+    map.getSource('route').setData({ type: 'Feature', geometry: S.route.geometry, properties: {} });
 
-        function executeSearch() {
-            const query = searchInput.value.trim();
-            if (!query) return;
-            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ' Malaysia')}&countrycodes=my`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.length > 0) {
-                        destinationCoords = [parseFloat(data[0].lon), parseFloat(data[0].lat)];
-                        startNavigationTo(destinationCoords);
-                    } else {
-                        alert('Location not found in Malaysia.');
-                    }
-                });
-        }
+    document.getElementById('sdist').textContent = fmtDist(S.route.distance);
+    document.getElementById('stime').textContent = fmtTime(S.route.duration);
+    document.getElementById('seta').textContent = new Date(Date.now() + S.route.duration * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+    document.getElementById('stoll').textContent = estimateToll(S.steps) > 0 ? `RM ${estimateToll(S.steps).toFixed(2)}` : 'RM 0.00';
 
-        // Routing Engine using OSRM
-        function startNavigationTo(dest) {
-            destinationCoords = dest;
-            isNavigating = true;
-            document.getElementById('nav-hud').style.display = 'block';
+    const b = S.coords.reduce((bb, c) => bb.extend(c), new maplibregl.LngLatBounds(S.coords[0], S.coords[0]));
+    map.fitBounds(b, { padding: 120, duration: 1200 });
 
-            if (map.getLayer('route')) {
-                map.removeLayer('route');
-                map.removeSource('route');
-            }
+    document.getElementById('bStart').style.display = '';
+    document.getElementById('bSim').style.display = '';
+    document.getElementById('bEnd').style.display = '';
+    toast('Route calculated ✓');
+  } catch (e) { toast('Routing failed'); }
+}
 
-            fetch(`https://router.project-osrm.org/route/v1/driving/${userLocation[0]},${userLocation[1]};${dest[0]},${dest[1]}?overview=full&geometries=geojson&steps=true`)
-                .then(res => res.json())
-                .then(data => {
-                    if (data.routes && data.routes.length > 0) {
-                        const route = data.routes[0];
-                        const coords = route.geometry.coordinates;
+function showStep(si) {
+  if (!S.steps.length) return;
+  const st = S.steps[si];
+  const txt = instruction(st, S.voiceMode);
+  document.getElementById('icon').textContent = maneuverIcon(st.maneuver.type, st.maneuver.modifier, txt);
+  document.getElementById('btext').textContent = txt;
+}
 
-                        map.addSource('route', {
-                            type: 'geojson',
-                            data: {
-                                type: 'Feature',
-                                properties: {},
-                                geometry: { type: 'LineString', coordinates: coords }
-                            }
-                        });
+function onPosition(gpsDriven) {
+  if (!S.route) return;
+  const nr = nearestOnRoute(S.coords, S.cum, S.pos, S.idx, 120);
+  S.idx = nr.idx; S.progress = nr.progress;
 
-                        map.addLayer({
-                            id: 'route',
-                            type: 'line',
-                            source: 'route',
-                            layout: { 'line-join': 'round', 'line-cap': 'round' },
-                            paint: { 'line-color': '#007AFF', 'line-width': 6 }
-                        });
+  // Rerouting on Deviation (> 40 meters off path)
+  if (nr.offset > 40) {
+    S.offRouteCount = (S.offRouteCount || 0) + 1;
+    if (S.offRouteCount > 3 && !S.rerouting) {
+      S.rerouting = true;
+      toast('Off route detected. Recalculating...', 2500);
+      speak('Recalculating route.');
+      fetchRoute().then(() => { S.rerouting = false; S.offRouteCount = 0; });
+    }
+  } else {
+    S.offRouteCount = 0;
+  }
 
-                        map.flyTo({ center: userLocation, zoom: 17, pitch: 45, duration: 1000 });
-                        updateNavHUD(route);
-                    }
-                })
-                .catch(err => console.error('Routing error:', err));
-        }
+  // Check AES Camera proximity
+  AES_CAMERAS.forEach(cam => {
+    const distToCam = haversine(S.pos, cam.lngLat);
+    if (distToCam < 500 && (Date.now() - S.lastAesAlert > 60000)) {
+      S.lastAesAlert = Date.now();
+      toast(`⚠️ Speed camera ahead! Limit: ${cam.limit} km/h`, 4000);
+      speak(`Speed camera ahead, ${cam.limit} kilometre per hour limit.`);
+    }
+  });
 
-        function updateNavHUD(route) {
-            const distanceKm = (route.distance / 1000).toFixed(1);
-            const durationMin = Math.round(route.duration / 60);
-            
-            document.getElementById('nav-instruction').innerText = route.legs[0].steps[0] ? route.legs[0].steps[0].maneuver.instruction : "Proceed to destination";
-            document.getElementById('nav-distance').innerText = `Distance: ${distanceKm} km`;
-            document.getElementById('nav-eta').innerText = `ETA: ${durationMin} min`;
-        }
+  const totalDist = S.cum[S.cum.length - 1];
+  const rem = Math.max(0, totalDist - S.progress);
+  document.getElementById('sdist').textContent = fmtDist(rem);
+  const fraction = rem / (totalDist || 1);
+  const remTime = S.route.duration * fraction;
+  document.getElementById('stime').textContent = fmtTime(remTime);
+  document.getElementById('seta').textContent = new Date(Date.now() + remTime * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+  document.getElementById('spdv').textContent = S.speed;
 
-        function checkRouteDeviation(currentPos) {
-            if (!destinationCoords) return;
-            
-            const now = Date.now();
-            if (now - lastRecalculateTime < 10000) return;
+  const si = stepIndexAt(S.ends, S.progress);
+  const stepDistRem = Math.max(0, S.ends[si] - S.progress);
+  document.getElementById('bdist').textContent = fmtDist(stepDistRem);
+  if (si !== S.lastStep) { S.lastStep = si; showStep(si); }
 
-            const distToDest = Math.hypot(destinationCoords[0] - currentPos[0], destinationCoords[1] - currentPos[1]);
-            
-            if (distToDest > 0.004) { 
-                lastRecalculateTime = now;
-                if (map.getLayer('route')) {
-                    map.removeLayer('route');
-                    map.removeSource('route');
-                }
-                
-                fetch(`https://router.project-osrm.org/route/v1/driving/${currentPos[0]},${currentPos[1]};${destinationCoords[0]},${destinationCoords[1]}?overview=full&geometries=geojson&steps=true`)
-                    .then(res => res.json())
-                    .then(data => {
-                        if (data.routes && data.routes.length > 0) {
-                            const route = data.routes[0];
-                            const coords = route.geometry.coordinates;
+  if (S.steps[si]) {
+    [500, 200, 50].forEach(th => {
+      if (stepDistRem <= th && stepDistRem > th - 25 && !S.announced[si + '_' + th]) {
+        S.announced[si + '_' + th] = true;
+        speak(spokenAt(S.steps[si], stepDistRem, S.voiceMode));
+      }
+    });
+  }
 
-                            map.addSource('route', {
-                                type: 'geojson',
-                                data: {
-                                    type: 'Feature',
-                                    properties: {},
-                                    geometry: { type: 'LineString', coordinates: coords }
-                                }
-                            });
+  if (rem < 35) {
+    toast('You have arrived at your destination!', 5000);
+    speak(S.voiceMode === 'BM' ? 'Anda telah sampai.' : (S.voiceMode === 'Manglish' ? 'Arrived already, boss!' : 'You have arrived at your destination.'));
+    endNav();
+    return;
+  }
 
-                            map.addLayer({
-                                id: 'route',
-                                type: 'line',
-                                source: 'route',
-                                layout: { 'line-join': 'round', 'line-cap': 'round' },
-                                paint: { 'line-color': '#007AFF', 'line-width': 6 }
-                            });
+  if (S.follow) {
+    map.easeTo({ center: S.pos, bearing: S.is3D ? S.heading : map.getBearing(), pitch: S.is3D ? 65 : 0, zoom: 17, duration: gpsDriven ? 900 : 300, easing: t => t });
+  }
+}
 
-                            updateNavHUD(route);
-                        }
-                    }).catch(e => console.log('Silent recalculation active'));
-            }
-        }
+document.getElementById('bStart').onclick = () => {
+  S.navigating = true; S.simulating = false; clearInterval(S.simTimer);
+  document.getElementById('banner').classList.add('on');
+  document.getElementById('bStart').style.display = 'none'; document.getElementById('bSim').style.display = 'none';
+  toast('Navigation started ✓'); speak(S.voiceMode === 'BM' ? 'Mulakan navigasi' : 'Starting navigation.');
+  onPosition(false);
+};
 
-        function stopNavigation() {
-            isNavigating = false;
-            destinationCoords = null;
-            document.getElementById('nav-hud').style.display = 'none';
-            if (map.getLayer('route')) {
-                map.removeLayer('route');
-                map.removeSource('route');
-            }
-        }
+document.getElementById('bSim').onclick = () => {
+  S.navigating = true; S.simulating = true;
+  document.getElementById('banner').classList.add('on');
+  document.getElementById('bStart').style.display = 'none'; document.getElementById('bSim').style.display = 'none';
+  document.getElementById('sim-controls').style.display = 'flex';
+  toast('Simulating smooth drive...'); speak('Simulating route.');
+  
+  clearInterval(S.simTimer);
+  S.simDist = 0;
+  const total = S.cum[S.cum.length - 1];
+  S.simTimer = setInterval(() => {
+    S.simDist += (18 * S.simSpeed);
+    if (S.simDist >= total) S.simDist = total;
+    S.speed = 85;
+    const pt = pointAt(S.coords, S.cum, S.simDist);
+    S.pos = pt.p; S.heading = pt.h;
+    me.setLngLat(S.pos);
+    meEl.style.transform = `rotate(${S.heading}deg)`;
+    onPosition(false);
+    if (S.simDist >= total) clearInterval(S.simTimer);
+  }, 500);
+};
 
-        function toggleAES() {
-            aesVisible = !aesVisible;
-            document.getElementById('aes-fab').classList.toggle('active-aes', aesVisible);
-        }
-    </script>
+['sim1x', 'sim2x', 'sim3x'].forEach(id => {
+  document.getElementById(id).onclick = (e) => {
+    ['sim1x', 'sim2x', 'sim3x'].forEach(i => document.getElementById(i).className = '');
+    e.target.className = 'pri';
+    S.simSpeed = id === 'sim1x' ? 1 : (id === 'sim2x' ? 2 : 3);
+  };
+});
+
+document.getElementById('bVoice').onclick = () => {
+  if (S.voiceMode === 'EN') { S.voiceMode = 'BM'; document.getElementById('bVoice').textContent = '🔊 BM'; }
+  else if (S.voiceMode === 'BM') { S.voiceMode = 'Manglish'; document.getElementById('bVoice').textContent = '🔊 Manglish'; }
+  else if (S.voiceMode === 'Manglish') { S.voiceMode = 'OFF'; document.getElementById('bVoice').textContent = '🔇 OFF'; }
+  else { S.voiceMode = 'EN'; document.getElementById('bVoice').textContent = '🔊 EN'; }
+  toast('Voice language set to: ' + S.voiceMode);
+};
+
+document.getElementById('bEnd').onclick = endNav;
+function endNav() {
+  S.navigating = false; S.simulating = false; clearInterval(S.simTimer);
+  document.getElementById('banner').classList.remove('on');
+  document.getElementById('bStart').style.display = 'none'; document.getElementById('bSim').style.display = 'none'; document.getElementById('bEnd').style.display = 'none';
+  document.getElementById('sim-controls').style.display = 'none';
+  if (S.route) map.getSource('route').setData({ type: 'Feature', geometry: { type: 'LineString', coordinates: [] }, properties: {} });
+  if (destMarker) destMarker.remove(); if (viaMarker) viaMarker.remove();
+  poiMarkers.forEach(m => m.remove()); poiMarkers = [];
+  S.route = null; S.dest = null; S.via = null;
+  map.easeTo({ pitch: 45, bearing: 0, zoom: 13, duration: 1000 });
+}
+
+document.getElementById('bView').onclick = () => { S.is3D = !S.is3D; document.getElementById('bView').textContent = S.is3D ? '3D: ON' : '3D: OFF'; map.easeTo({ pitch: S.is3D ? 65 : 0, duration: 600 }); };
+document.getElementById('bRecenter').onclick = () => { S.follow = true; map.easeTo({ center: S.pos, zoom: 17, pitch: S.is3D ? 65 : 0, duration: 800 }); };
+</script>
 </body>
 </html>
