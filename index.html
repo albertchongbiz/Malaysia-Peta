@@ -23,6 +23,7 @@
             position: absolute;
             top: 0;
             left: 0;
+            z-index: 1;
         }
         /* Top Search & Control Bar */
         .top-bar {
@@ -100,6 +101,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            text-align: center;
             pointer-events: none;
         }
         .brand-title {
@@ -107,6 +109,7 @@
             font-weight: 900;
             letter-spacing: 1px;
             color: #ffffff;
+            width: 100%;
         }
         .brand-title span {
             color: #ffcc00;
@@ -118,6 +121,7 @@
             margin-top: 2px;
             letter-spacing: 0.5px;
             text-transform: uppercase;
+            width: 100%;
         }
         /* Floating Action Buttons */
         .fab-container {
@@ -213,7 +217,7 @@
     <!-- Branding Badge -->
     <div class="brand-badge">
         <div class="brand-title">MALAYSIA <span>PETA</span></div>
-        <div class="brand-subtitle">Beta Version</div>
+        <div class="brand-subtitle">Beta v1.9.1</div>
     </div>
 
     <!-- Floating Buttons -->
@@ -228,16 +232,7 @@
         // Initialize Map centered over Kuala Lumpur
         const map = new maplibregl.Map({
             container: 'map',
-            style: 'https://api.maptiler.com/maps/streets-v2/style.json?key=get_your_own_key_or_use_osm',
-            center: [101.6869, 3.1390],
-            zoom: 13,
-            pitch: 45,
-            bearing: 0
-        });
-
-        // Fallback standard vector tiles if maptiler key is missing
-        if (!map.style || map.style.url.includes('get_your_own_key')) {
-            map.setStyle({
+            style: {
                 version: 8,
                 sources: {
                     'osm': {
@@ -254,8 +249,12 @@
                     minzoom: 0,
                     maxzoom: 19
                 }]
-            });
-        }
+            },
+            center: [101.6869, 3.1390],
+            zoom: 13,
+            pitch: 45,
+            bearing: 0
+        });
 
         let userLocation = [101.6869, 3.1390];
         let destinationCoords = null;
@@ -271,13 +270,12 @@
                     userLocation = [position.coords.longitude, position.coords.latitude];
                     updateUserMarker(userLocation);
                     
-                    // Auto recenter & zoom in during active navigation
                     if (isNavigating) {
                         map.easeTo({
                             center: userLocation,
-                            zoom: 17, // Closer driving zoom for easy reading
+                            zoom: 17,
                             pitch: 45,
-                            bearing: position.coords.heading || 0, // Align with movement direction if available
+                            bearing: position.coords.heading || 0,
                             duration: 800
                         });
                         checkRouteDeviation(userLocation);
@@ -404,7 +402,6 @@
                             paint: { 'line-color': '#007AFF', 'line-width': 6 }
                         });
 
-                        // Initial jump to start position zoomed in
                         map.flyTo({ center: userLocation, zoom: 17, pitch: 45, duration: 1000 });
                         updateNavHUD(route);
                     }
@@ -421,7 +418,6 @@
             document.getElementById('nav-eta').innerText = `ETA: ${durationMin} min`;
         }
 
-        // Silent route recalculation on opposite direction or major drift
         function checkRouteDeviation(currentPos) {
             if (!destinationCoords) return;
             
